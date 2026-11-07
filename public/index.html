@@ -644,15 +644,19 @@ const grano = new ShaderPass({
 });
 composer.addPass(grano);
 
-// ---------- Música: piano triste, tocado en vivo (sin archivos) ----------
+// ---------- Música: la canción de fondo + efectos (pizza, faroles, viento, grillos) ----------
 const Sonido = (() => {
-  let AC = null, salida = null, rev = null, ruido = null, etiqueta = null, nivel = 0, sig = 0, paso = 0, mudo = false, vientoG = null, grillos = 0, sigGrillo = 0;
-  const BPM = 62, CORCHEA = 60 / BPM / 2;
-  // La menor: Lam – Fa – Do – Sol | Lam – Fa – Do – Mi
-  const ACORDES = [[45, 52, 57, 60, 64], [41, 48, 53, 57, 60], [48, 55, 60, 64, 67], [43, 50, 55, 59, 62], [45, 52, 57, 60, 64], [41, 48, 53, 57, 60], [48, 55, 60, 64, 67], [40, 47, 52, 56, 59]];
-  const ARP = [0, 1, 2, 3, 4, 3, 2, 1];
-  const MELODIA = [[0, 0, 76, 3], [0, 3, 74, 1], [0, 4, 72, 4], [1, 0, 72, 3], [1, 3, 71, 1], [1, 4, 69, 4], [2, 0, 67, 3], [2, 3, 69, 1], [2, 4, 72, 4], [3, 0, 71, 7],
-    [4, 0, 76, 3], [4, 3, 74, 1], [4, 4, 76, 4], [5, 0, 77, 3], [5, 3, 76, 1], [5, 4, 72, 4], [6, 0, 74, 2], [6, 2, 72, 2], [6, 4, 71, 2], [6, 6, 67, 2], [7, 0, 68, 6], [7, 6, 71, 2]];
+  let AC = null, salida = null, rev = null, ruido = null, etiqueta = null, nivel = 0, mudo = false, vientoG = null, grillos = 0, sigGrillo = 0;
+  // La canción: empieza al tocar "Ver el atardecer" y sube o baja tantito según el momento de la historia
+  const cancion = new Audio('cancion.mp3'); cancion.preload = 'auto'; cancion.loop = true; cancion.setAttribute('playsinline', '');
+  const VOL = [0, 0.6, 0.75, 0.85]; // volumen de la canción en cada nivel
+  let cancionG = null, reiniciando = 0;
+  function volCancion(tau = 1.4) {
+    const v = mudo ? 0 : VOL[nivel] ?? 0.75;
+    if (performance.now() < reiniciando) return;
+    if (cancionG) { cancionG.gain.cancelScheduledValues(AC.currentTime); cancionG.gain.setTargetAtTime(v, AC.currentTime, mudo ? 0.05 : tau); }
+    else { cancion.muted = mudo; cancion.volume = Math.min(1, v); }
+  }
   const hz = (m) => 440 * Math.pow(2, (m - 69) / 12);
   function wavSilencio() {
     const n = 4000, b = new ArrayBuffer(44 + n), d = new DataView(b), s = (o, t) => { for (let i = 0; i < t.length; i++) d.setUint8(o + i, t.charCodeAt(i)); };
@@ -662,6 +666,7 @@ const Sonido = (() => {
     let bin = ''; const u8 = new Uint8Array(b); for (let i = 0; i < u8.length; i++) bin += String.fromCharCode(u8[i]); return 'data:audio/wav;base64,' + btoa(bin);
   }
   function iniciar() {
+    cancion.play().catch(() => {}); // va primero: el iPhone solo deja sonar pegado al toque
     if (AC) { AC.resume?.(); return; }
     try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch { /* no soportado */ }
     try { etiqueta = new Audio(wavSilencio()); etiqueta.loop = true; etiqueta.setAttribute('playsinline', ''); etiqueta.play().catch(() => {}); } catch { /* nada */ }
@@ -678,8 +683,16 @@ const Sonido = (() => {
     vientoG = AC.createGain(); vientoG.gain.value = 0; vs.connect(vf); vf.connect(vientoG); vientoG.connect(salida);
     const lfo = AC.createOscillator(), lg = AC.createGain(); lfo.frequency.value = 0.08; lg.gain.value = 260; lfo.connect(lg); lg.connect(vf.frequency); lfo.start(); vs.start();
     const s0 = AC.createBufferSource(); s0.buffer = AC.createBuffer(1, 1, 22050); s0.connect(AC.destination); s0.start(0);
-    sig = AC.currentTime + 0.25; setInterval(programar, 60);
-    document.addEventListener('visibilitychange', () => { if (document.hidden) { AC.suspend(); etiqueta?.pause(); } else { AC.resume(); etiqueta?.play().catch(() => {}); sig = Math.max(sig, AC.currentTime + 0.1); } });
+    try { // la canción pasa por el mezclador para poder subirle y bajarle (en iPhone el volumen del <audio> no se puede cambiar)
+      const fuente = AC.createMediaElementSource(cancion); cancionG = AC.createGain(); cancionG.gain.value = 0;
+      fuente.connect(cancionG); cancionG.connect(AC.destination);
+    } catch { cancionG = null; }
+    volCancion();
+    setInterval(programar, 60);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) { AC.suspend(); etiqueta?.pause(); cancion.pause(); }
+      else { AC.resume(); etiqueta?.play().catch(() => {}); cancion.play().catch(() => {}); }
+    });
   }
   function piano(m, t, vel = 0.5, dur = 3) {
     const f = hz(m), fl = AC.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.value = 1400 + vel * 3200;
@@ -694,36 +707,26 @@ const Sonido = (() => {
     const s = AC.createBufferSource(); s.buffer = ruido; const nf = AC.createBiquadFilter(); nf.type = 'bandpass'; nf.frequency.value = Math.min(f * 3, 8000); const ng = AC.createGain();
     ng.gain.setValueAtTime(vel * 0.02, t); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.03); s.connect(nf); nf.connect(ng); ng.connect(out); s.start(t); s.stop(t + 0.05);
   }
-  function cuerdas(notas, t, dur, vol) {
-    notas.forEach((m, i) => [-7, 7].forEach((det) => {
-      const o = AC.createOscillator(); o.type = 'sawtooth'; o.frequency.value = hz(m); o.detune.value = det + i * 2;
-      const fl = AC.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.value = m < 50 ? 420 : 950; fl.Q.value = 0.3;
-      const g = AC.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(vol, t + dur * 0.4); g.gain.linearRampToValueAtTime(vol * 0.8, t + dur * 0.8); g.gain.linearRampToValueAtTime(0.0001, t + dur + 0.6);
-      o.connect(fl); fl.connect(g); g.connect(salida); const w = AC.createGain(); w.gain.value = 0.6; g.connect(w); w.connect(rev); o.start(t); o.stop(t + dur + 0.7);
-    }));
-  }
   function grillo(t) {
     const f = rand(4300, 4800);
     for (let k = 0; k < 3; k++) { const o = AC.createOscillator(), g = AC.createGain(), t0 = t + k * 0.06; o.frequency.value = f; g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.012 * grillos, t0 + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.04); o.connect(g); g.connect(salida); o.start(t0); o.stop(t0 + 0.05); }
   }
   function programar() {
     if (!AC) return;
-    while (sig < AC.currentTime + 0.35) {
-      const t = sig, compas = Math.floor(paso / 8) % 8, c = paso % 8, acorde = ACORDES[compas];
-      if (nivel >= 1) piano(acorde[ARP[c]], t, c === 0 ? 0.42 : 0.3, 3.2);
-      if (nivel >= 1 && c === 0) piano(acorde[0] - 12, t, 0.38, 4.5);
-      if (nivel >= 2) for (const [cm, cc, nota, dur] of MELODIA) if (cm === compas && cc === c) piano(nota + (nivel >= 3 ? 12 : 0), t + 0.01, 0.6, dur * CORCHEA * 2.4);
-      if (nivel >= 3 && c === 0) cuerdas([acorde[0] - 12, acorde[2], acorde[3]], t, CORCHEA * 8, 0.022);
-      sig += CORCHEA; paso++;
-    }
     if (grillos > 0.01 && AC.currentTime > sigGrillo) { grillo(AC.currentTime + 0.05); sigGrillo = AC.currentTime + rand(0.35, 1.1); }
   }
-  const PENTA = [69, 72, 74, 76, 79, 81, 84, 86];
+  const PENTA = [61, 64, 66, 68, 71, 73, 76, 78]; // pentatónica de Do# menor: el tono de la canción
   return {
     iniciar,
-    nivel(n) { nivel = n; },
+    nivel(n) { nivel = n; volCancion(); },
+    desdeElInicio() { // "Ver otra vez": la canción vuelve a empezar con la historia
+      if (!AC || cancion.currentTime < 1) return;
+      if (cancionG) cancionG.gain.setTargetAtTime(0, AC.currentTime, 0.12);
+      reiniciando = performance.now() + 600;
+      setTimeout(() => { cancion.currentTime = 0; cancion.play().catch(() => {}); reiniciando = 0; volCancion(1); }, 650);
+    },
     get nivelAhora() { return nivel; },
-    viento(v) { if (vientoG) vientoG.gain.setTargetAtTime(v * 0.05, AC.currentTime, 1.2); },
+    viento(v) { if (vientoG) vientoG.gain.setTargetAtTime(v * 0.03, AC.currentTime, 1.2); },
     grillos(v) { grillos = v; },
     nota(k = 0, vel = 0.55) { if (AC) piano(PENTA[k % PENTA.length] + 12, AC.currentTime + 0.02, vel, 2.6); },
     soplido() {
@@ -732,8 +735,8 @@ const Sonido = (() => {
       s.connect(f); f.connect(g); g.connect(salida); s.start(t); s.stop(t + 2.1);
     },
     cascada() { if (!AC) return; const t = AC.currentTime; PENTA.concat(PENTA.map((m) => m + 12)).forEach((m, i) => piano(m, t + i * 0.11, 0.35, 1.8)); },
-    acorde(vol = 0.5) { if (!AC) return; const t = AC.currentTime; [57, 64, 69, 72, 76].forEach((m, i) => piano(m, t + i * 0.05, vol, 4)); },
-    mudo(m) { mudo = m; if (salida) salida.gain.setTargetAtTime(m ? 0 : 1, AC.currentTime, 0.05); if (etiqueta) etiqueta.muted = m; },
+    acorde(vol = 0.5) { if (!AC) return; const t = AC.currentTime; [49, 56, 61, 64, 68].forEach((m, i) => piano(m, t + i * 0.05, vol, 4)); },
+    mudo(m) { mudo = m; if (salida) salida.gain.setTargetAtTime(m ? 0 : 1, AC.currentTime, 0.05); if (etiqueta) etiqueta.muted = m; volCancion(); },
     get mudoAhora() { return mudo; },
   };
 })();
@@ -966,7 +969,7 @@ $('mute').addEventListener('click', () => { const m = !Sonido.mudoAhora; Sonido.
 $('ultima').addEventListener('click', () => { tarjeta('pregunta'); Sonido.nota(5, 0.5); });
 document.querySelectorAll('#pregunta [data-r]').forEach((b) => b.addEventListener('click', () => responder(b.dataset.r)));
 $('cambiar').addEventListener('click', () => { clearTimeout(tLluvia); lluviaRate = 0; despejar(); tween(estado, 'alt', -9, 3000); tarjeta('pregunta'); });
-$('otraVez').addEventListener('click', () => historia());
+$('otraVez').addEventListener('click', () => { Sonido.desdeElInicio(); historia(); });
 $('guardar').addEventListener('click', () => hacerPostal().catch(() => {}));
 document.querySelectorAll('.btn-libre').forEach((b) => b.addEventListener('click', modoLibre));
 $('volver').addEventListener('click', () => { $('volver').hidden = true; clearTimeout(tLluvia); lluviaRate = 0; despejar(); tarjeta($('rTitulo').textContent ? 'respuesta' : 'postal'); fase = 'noche'; });
@@ -1112,7 +1115,7 @@ addEventListener('resize', ajustar); ajustar();
   window.__listo = true;
 })();
 
-window.__c = { get fase() { return fase; }, get atrapadas() { return atrapadas; }, get gigante() { return gigante; }, pizzas, faroles, aPantalla, estado, cam, historia, responder, hacerPostal,
+window.__c = { Sonido, get fase() { return fase; }, get atrapadas() { return atrapadas; }, get gigante() { return gigante; }, pizzas, faroles, aPantalla, estado, cam, historia, responder, hacerPostal,
   get postalFoto() { return postalFoto; }, get orden() { return gigante?.orden; }, get detener() { return detener; } };
 </script>
 </body>
