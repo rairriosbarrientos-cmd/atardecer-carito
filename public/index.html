@@ -1,0 +1,1119 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#120a16">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Un atardecer, una lluvia de pizza y algo que te quiero decir.">
+<meta property="og:title" content="Carito, esto es para ti 🌅">
+<meta property="og:description" content="Un atardecer, una lluvia de pizza y algo que te quiero decir.">
+<link rel="icon" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Atardecer 🌅">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Para Carito 🌅</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,600&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+  :root {
+    --crema: #FFF4E8; --durazno: #FFC29A; --tenue: rgba(255, 236, 222, .72); --vidrio: rgba(28, 13, 28, .58); --borde: rgba(255, 196, 150, .28);
+    --titulo: 'Bricolage Grotesque', system-ui, sans-serif; --serif: 'Fraunces', Georgia, serif; --texto: 'DM Sans', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; margin: 0; }
+  body { background: #0c070f; color: var(--crema); font-family: var(--texto); overflow: hidden; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: none; }
+  canvas { position: fixed; inset: 0; width: 100% !important; height: 100% !important; display: block; touch-action: none; }
+
+  #negro { position: fixed; inset: 0; background: #000; z-index: 4; opacity: 0; pointer-events: none; transition: opacity 2.8s ease; }
+  #negro.on { opacity: 1; transition: none; }
+  #inicio { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 24px 20px; text-align: center;
+    background: radial-gradient(120% 80% at 50% 40%, rgba(12, 6, 14, .25) 0%, rgba(12, 6, 14, .75) 70%, rgba(8, 4, 10, .93) 100%); transition: opacity 1.2s ease; }
+  #inicio.fuera { opacity: 0; pointer-events: none; }
+  #inicio .k { font-size: 12px; letter-spacing: .34em; text-transform: uppercase; color: var(--durazno); margin: 0 0 14px; }
+  #inicio h1 { font-family: var(--titulo); font-weight: 800; font-size: clamp(54px, 17vw, 120px); line-height: .92; margin: 0;
+    background: linear-gradient(180deg, #FFF3D6 0%, #FFC27A 42%, #FF7A55 72%, #E8577E 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 6px 30px rgba(255, 120, 70, .35)); }
+  #inicio p.sub { font-family: var(--serif); font-style: italic; font-weight: 300; font-size: clamp(19px, 5.2vw, 25px); line-height: 1.3; max-width: 22em; margin: 16px auto 0; text-wrap: balance; }
+  #inicio p.vol { font-size: 13.5px; color: var(--tenue); margin: 22px 0 0; }
+  #inicio .de { font-family: var(--serif); font-style: italic; color: var(--durazno); margin: 18px 0 0; font-size: 18px; }
+
+  .btn { font-family: var(--texto); font-weight: 700; font-size: 16px; color: #2A0F12; border: 0; border-radius: 999px; padding: 15px 26px; min-height: 52px; cursor: pointer;
+    background: linear-gradient(180deg, #FFE1A8, #FFB070 55%, #FF8A5C); box-shadow: 0 10px 34px rgba(255, 130, 80, .38), inset 0 1px 0 rgba(255, 255, 255, .6); }
+  .btn:active { transform: scale(.97); }
+  #inicio .btn { margin-top: 26px; font-size: 18px; padding: 17px 32px; animation: latido 2.4s ease-in-out infinite; }
+  @keyframes latido { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.045); } }
+  .chico { font-family: var(--texto); font-weight: 600; font-size: 15px; color: var(--crema); background: rgba(255, 255, 255, .08); border: 1px solid var(--borde);
+    border-radius: 999px; padding: 12px 18px; min-height: 48px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+  .chico:active { transform: scale(.97); }
+
+  #cap { position: fixed; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 12vh); transform: translate(-50%, 10px); width: min(calc(100vw - 40px), 560px);
+    text-align: center; font-family: var(--serif); font-style: italic; font-weight: 400; font-size: clamp(25px, 7.2vw, 38px); line-height: 1.22; color: #FFF7EE; text-wrap: balance;
+    text-shadow: 0 2px 24px rgba(40, 10, 20, .85), 0 1px 3px rgba(30, 8, 15, .7); opacity: 0; filter: blur(6px); transition: opacity 1s ease, transform 1.2s ease, filter 1s ease; pointer-events: none; z-index: 5; }
+  #cap.on { opacity: 1; transform: translate(-50%, 0); filter: blur(0); }
+  #cap.abajo { top: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 12vh); }
+  #pista { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 28px); transform: translateX(-50%); font-weight: 700; font-size: 15px;
+    padding: 11px 18px; border-radius: 999px; background: var(--vidrio); border: 1px solid var(--borde); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    opacity: 0; transition: opacity .5s ease; pointer-events: none; z-index: 5; white-space: nowrap; }
+  #pista.on { opacity: 1; animation: flota 1.8s ease-in-out infinite; }
+  @keyframes flota { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -6px); } }
+  #toast { position: fixed; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 70px); transform: translateX(-50%); width: max-content; max-width: calc(100vw - 32px); text-align: center; font-weight: 700; font-size: 15px;
+    padding: 11px 18px; border-radius: 18px; background: rgba(28, 13, 28, .85); border: 1px solid var(--borde); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); opacity: 0; transition: opacity .5s ease; pointer-events: none; z-index: 9; }
+  #toast.on { opacity: 1; }
+  #cuenta { position: fixed; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 18px); transform: translateX(-50%); font-weight: 700; font-size: 15px; letter-spacing: .06em;
+    padding: 9px 16px; border-radius: 999px; background: var(--vidrio); border: 1px solid var(--borde); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    opacity: 0; transition: opacity .4s ease; pointer-events: none; z-index: 5; }
+  #cuenta.on { opacity: 1; }
+  #anillo { position: fixed; width: 92px; height: 92px; margin: -46px 0 0 -46px; border-radius: 50%; pointer-events: none; z-index: 5; opacity: 0; transition: opacity .3s;
+    background: conic-gradient(rgba(255, 220, 160, .95) calc(var(--p, 0) * 1turn), rgba(255, 255, 255, .14) 0);
+    -webkit-mask: radial-gradient(circle, transparent 38px, #000 39px); mask: radial-gradient(circle, transparent 38px, #000 39px); }
+  #anillo.on { opacity: 1; }
+  #mute { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 12px); right: max(12px, env(safe-area-inset-right, 0px)); width: 44px; height: 44px; border-radius: 50%;
+    background: var(--vidrio); border: 1px solid var(--borde); color: var(--crema); font-size: 18px; cursor: pointer; z-index: 6; display: none; }
+
+  .tarjeta { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 14px); transform: translate(-50%, 30px); width: min(calc(100vw - 28px), 470px);
+    max-height: calc(100vh - 90px); overflow: auto; padding: 22px 20px 20px; border-radius: 26px; text-align: center; background: var(--vidrio); border: 1px solid var(--borde);
+    box-shadow: 0 18px 70px rgba(10, 3, 12, .6), 0 0 90px rgba(255, 140, 90, .12); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    opacity: 0; pointer-events: none; transition: opacity .9s ease, transform .9s ease; z-index: 7; }
+  .tarjeta.on { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+  .kicker { font-size: 11.5px; letter-spacing: .28em; text-transform: uppercase; color: var(--durazno); margin: 0; }
+  .tarjeta h2 { font-family: var(--titulo); font-weight: 800; font-size: clamp(26px, 7.6vw, 34px); line-height: 1.05; margin: 8px 0 12px;
+    background: linear-gradient(180deg, #FFF0CC, #FFB070 60%, #FF7A62); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .tarjeta dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; text-align: left; font-size: 14.5px; margin: 0 auto 14px; max-width: 330px; }
+  .tarjeta dt { color: var(--tenue); }
+  .tarjeta dd { margin: 0; }
+  .final { font-family: var(--serif); font-style: italic; font-size: clamp(21px, 5.8vw, 26px); line-height: 1.27; margin: 4px 0 0; text-wrap: balance; }
+  .acciones { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+  .apiladas { display: grid; gap: 10px; margin-top: 18px; }
+  .apiladas .chico, .apiladas .btn { width: 100%; }
+  .acciones.mini .chico { font-size: 14px; min-height: 44px; padding: 10px 15px; }
+  .enlace { background: none; border: 0; color: var(--tenue); font: 500 14px var(--texto); text-decoration: underline; margin-top: 12px; cursor: pointer; padding: 6px; }
+  [hidden] { display: none !important; }
+  #aviso3d { position: fixed; inset: 0; display: none; place-items: center; text-align: center; padding: 24px; z-index: 20; background: #0c070f; font-family: var(--serif); font-size: 22px; }
+  #volver { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom, 0px) + 22px); z-index: 6; background: rgba(28, 13, 28, .62); }
+</style>
+</head>
+<body>
+<div id="negro"></div>
+<div id="inicio">
+  <div>
+    <p class="k">Hostotipaquillo · Jalisco</p>
+    <h1>Para<br>Carito</h1>
+    <p class="sub">Un atardecer, una lluvia de pizza y algo que te quiero decir.</p>
+    <button class="btn" id="go" disabled>Cargando…</button>
+    <p class="vol">Con audífonos y el volumen arriba 🎧 · como 3 minutos</p>
+    <div><button class="chico avisame" id="avisameInicio" hidden style="margin-top:14px">🌅 Avísame cada atardecer</button></div>
+    <p class="de">— Alfredo</p>
+  </div>
+</div>
+<div id="cap" aria-live="polite"></div>
+<div id="pista"></div>
+<div id="toast" aria-live="polite"></div>
+<div id="cuenta">🍕 0/6</div>
+<div id="anillo"></div>
+<button id="mute" aria-label="Silenciar">🔊</button>
+<button class="chico" id="volver" hidden>Volver ✦</button>
+
+<div class="tarjeta" id="postal">
+  <p class="kicker">Postal del atardecer</p>
+  <h2>Hostotipaquillo, Jal.</h2>
+  <dl>
+    <dt>Fecha</dt><dd id="pFecha"></dd>
+    <dt>El sol se metió</dt><dd id="pHora"></dd>
+    <dt>Para</dt><dd>Carito</dd>
+    <dt>De</dt><dd>Alfredo</dd>
+  </dl>
+  <p class="final">Cada atardecer me acuerdo de ti. Y hoy quise que este fuera tuyo.</p>
+  <div class="acciones"><button class="btn" id="ultima">Una última cosa… 🌅</button></div>
+  <div class="acciones mini"><button class="chico" id="guardar">📸 Guardar postal</button><button class="chico btn-libre">🏮 Más farolitos</button></div>
+</div>
+
+<div class="tarjeta" id="pregunta">
+  <p class="kicker">Te extraño</p>
+  <p class="final" id="pTexto"></p>
+  <div class="apiladas">
+    <button class="btn" data-r="si">Sí 🍕</button>
+    <button class="chico" data-r="pensar">Déjame pensarlo 🤔</button>
+    <button class="chico" data-r="no">No</button>
+  </div>
+</div>
+
+<div class="tarjeta" id="respuesta">
+  <h2 id="rTitulo"></h2>
+  <p class="final" id="rTexto"></p>
+  <div class="apiladas"><a class="btn" id="wa" target="_blank" rel="noopener" style="text-decoration:none;display:flex;align-items:center;justify-content:center"></a><button class="chico avisame" id="avisame" hidden>🌅 Avísame cada atardecer</button></div>
+  <div class="acciones mini"><button class="chico" id="otraVez">🔁 Ver otra vez</button><button class="chico btn-libre">🏮 Más farolitos</button></div>
+  <button class="enlace" id="cambiar">Cambiar mi respuesta</button>
+</div>
+
+<div class="tarjeta" id="avisoApp">
+  <p class="kicker">🌅 Cada atardecer</p>
+  <p class="final">Para que te llegue el aviso justo cuando se mete el sol: toca <b>Compartir ⬆️</b> → <b>Agregar a inicio</b>, ábrela desde ese ícono y toca 🌅 otra vez.</p>
+  <div class="acciones"><button class="btn" id="avisoOk">Va 🌅</button></div>
+</div>
+
+<div id="aviso3d">Tu navegador no pudo abrir el atardecer 😅<br>Ábrelo en Chrome o Safari actualizado.</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "./lib/three.module.min.js",
+  "three/addons/": "./lib/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { Sky } from 'three/addons/objects/Sky.js';
+
+// ================== Lo que dice (cámbialo aquí) ==================
+const CONFIG = {
+  apodo: 'Carito',
+  de: 'Alfredo',
+  lugar: 'Hostotipaquillo',
+  lat: 21.0597, lon: -104.0497, utc: -6, // Jalisco: UTC-6 todo el año
+  whatsapp: '523241169402',
+  rebanadas: [
+    'Te extraño, Carito. Así, sin rodeos.',
+    'Cada vez que veo un atardecer, me acuerdo de ti.',
+    'Ninguna pizza sabe igual si no es contigo.',
+    'Extraño platicar contigo de todo… y de nada.',
+    'No te hice esto para presionarte. Solo quería que supieras que sigues aquí.',
+    'Pepperoni, extra queso y tú: mi combinación favorita 😏',
+  ],
+  pregunta: '¿Me dejas invitarte una pizza y ver el atardecer juntos otra vez? 🍕🌅',
+  respuestas: {
+    si: { titulo: '¡Va!', texto: 'Tú escoges el día. La pizza y el atardecer los pongo yo 🍕🌅', boton: 'Decirle que sí 💬', wa: 'Sí, va la pizza y el atardecer 🍕🌅' },
+    pensar: { titulo: 'Sin prisa', texto: 'Tómate tu tiempo, Carito. El sol sale diario y yo aquí voy a estar 🌅', boton: 'Avisarle 💬', wa: 'Déjame pensarlo 🙂🌅' },
+    no: { titulo: 'Está bien', texto: 'Gracias por verlo hasta el final, de verdad. Que siempre te toquen atardeceres bonitos 🌅', boton: 'Avisarle (si quieres) 💬', wa: 'Vi tu atardecer. Gracias, pero no 🙏' },
+  },
+};
+// =================================================================
+
+const $ = (id) => document.getElementById(id);
+const rand = (a, b) => a + Math.random() * (b - a);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const suave = (t) => t * t * (3 - 2 * t);
+const suavecito = (a, b, x) => suave(clamp((x - a) / (b - a), 0, 1));
+const enOut = (t) => 1 - Math.pow(1 - t, 3);
+const enInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const D2R = Math.PI / 180;
+
+// ---------- Hora real de la puesta de sol en Hostotipaquillo (fórmula de la NOAA) ----------
+function puestaDeSol(d = new Date()) {
+  const ini = Date.UTC(d.getUTCFullYear(), 0, 0), n = Math.floor((Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - ini) / 864e5);
+  const g = 2 * Math.PI / 365 * (n - 1);
+  const eq = 229.18 * (0.000075 + 0.001868 * Math.cos(g) - 0.032077 * Math.sin(g) - 0.014615 * Math.cos(2 * g) - 0.040849 * Math.sin(2 * g));
+  const dec = 0.006918 - 0.399912 * Math.cos(g) + 0.070257 * Math.sin(g) - 0.006758 * Math.cos(2 * g) + 0.000907 * Math.sin(2 * g) - 0.002697 * Math.cos(3 * g) + 0.00148 * Math.sin(3 * g);
+  const lat = CONFIG.lat * D2R;
+  const ha = Math.acos(Math.cos(90.833 * D2R) / (Math.cos(lat) * Math.cos(dec)) - Math.tan(lat) * Math.tan(dec)) / D2R;
+  let min = 720 - 4 * (CONFIG.lon - ha) - eq + CONFIG.utc * 60;
+  min = ((Math.round(min) % 1440) + 1440) % 1440;
+  const h = Math.floor(min / 60), m = min % 60;
+  return `${((h + 11) % 12) + 1}:${String(m).padStart(2, '0')} ${h < 12 ? 'am' : 'pm'}`;
+}
+const HORA_SOL = puestaDeSol();
+const FECHA = new Date().toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'America/Mexico_City' });
+
+// ---------- Render ----------
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' }); }
+catch { $('aviso3d').style.display = 'grid'; throw new Error('sin WebGL'); }
+let pr = Math.min(window.devicePixelRatio || 1, 1.5);
+renderer.setPixelRatio(pr);
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.62;
+document.body.prepend(renderer.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 6000);
+const CAM = new THREE.Vector3(0, 3.2, 12), MIRA = new THREE.Vector3(0, 17, -120);        // donde se queda la cámara
+const CAM0 = new THREE.Vector3(0.4, 0.8, 6.5), MIRA0 = new THREE.Vector3(1.6, 1.3, -8);  // abajo, entre los agaves (al empezar)
+const cam = { t: 0 };
+camera.position.copy(CAM0); camera.lookAt(MIRA0);
+
+// ---------- Cielo real (modelo de Preetham) ----------
+const CIELO = { turbidity: 5, rayleigh: 1.8, mie: 0.003, mieG: 0.87 };
+const sky = new Sky(); sky.scale.setScalar(5000); sky.renderOrder = -2;
+const u = sky.material.uniforms;
+u.turbidity.value = CIELO.turbidity; u.rayleigh.value = CIELO.rayleigh; u.mieCoefficient.value = CIELO.mie; u.mieDirectionalG.value = CIELO.mieG;
+scene.add(sky);
+
+// El mismo cálculo del cielo, en JS: así la bruma, la luz y las nubes tienen exactamente su color.
+const RAY = [5.804542996261093e-6, 1.3562911419845635e-5, 3.0265902468824876e-5], MIEK = [1.8399918514433978e14, 2.7798023919660528e14, 4.0790479543861094e14];
+function colorCielo(dir, sol, out) {
+  const sunE = 1000 * Math.max(0, 1 - Math.exp(-((1.6110731556870734 - Math.acos(clamp(sol.y, -1, 1))) / 1.5)));
+  const c = 0.2 * CIELO.turbidity * 10e-18;
+  const z = Math.acos(Math.max(0, dir.y)), inv = 1 / (Math.cos(z) + 0.15 * Math.pow(93.885 - z / D2R, -1.253));
+  const cosT = dir.x * sol.x + dir.y * sol.y + dir.z * sol.z;
+  const rPh = 0.05968310365946075 * (1 + Math.pow(cosT * 0.5 + 0.5, 2));
+  const g2 = CIELO.mieG * CIELO.mieG, mPh = 0.07957747154594767 * (1 - g2) / Math.pow(1 - 2 * CIELO.mieG * cosT + g2, 1.5);
+  const mezcla = clamp(Math.pow(1 - sol.y, 5), 0, 1), res = [0, 0, 0];
+  for (let i = 0; i < 3; i++) {
+    const bR = RAY[i] * CIELO.rayleigh, bM = 0.434 * c * MIEK[i] * CIELO.mie;
+    const fex = Math.exp(-(bR * 8400 * inv + bM * 1250 * inv)), k = sunE * ((bR * rPh + bM * mPh) / (bR + bM));
+    const lin = Math.pow(k * (1 - fex), 1.5) * lerp(1, Math.sqrt(k * fex), mezcla);
+    res[i] = Math.pow((lin + 0.1 * fex) * 0.04 + [0, 0.0003, 0.00075][i], 1 / 2.4);
+  }
+  return out.setRGB(res[0], res[1], res[2]);
+}
+// Color de la luz del sol (se pone roja cuando está bajito)
+function colorSol(sol, out) {
+  const c = 0.2 * CIELO.turbidity * 10e-18, z = Math.acos(clamp(sol.y, 0, 1)), inv = 1 / (Math.cos(z) + 0.15 * Math.pow(93.885 - z / D2R, -1.253));
+  const f = [0, 1, 2].map((i) => Math.exp(-(RAY[i] * CIELO.rayleigh * 8400 * inv + 0.434 * c * MIEK[i] * CIELO.mie * 1250 * inv)));
+  const m = Math.max(...f, 1e-6); return out.setRGB(f[0] / m, f[1] / m, f[2] / m);
+}
+
+// Noche: un velo azul y estrellas
+const velo = new THREE.Mesh(new THREE.SphereGeometry(4000, 32, 16), new THREE.ShaderMaterial({
+  side: THREE.BackSide, depthWrite: false, transparent: true, blending: THREE.AdditiveBlending, fog: false,
+  uniforms: { uN: { value: 0 } },
+  vertexShader: 'varying vec3 vP; void main(){ vP = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
+  fragmentShader: 'uniform float uN; varying vec3 vP; void main(){ float h = normalize(vP).y; vec3 c = mix(vec3(0.07,0.035,0.08), vec3(0.01,0.014,0.045), smoothstep(0.0, 0.5, h)); gl_FragColor = vec4(c * uN, 1.0); }',
+}));
+velo.renderOrder = -1; scene.add(velo);
+const estrellas = (() => {
+  const n = 1800, pos = new Float32Array(n * 3), tam = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const y = 0.03 + Math.random() * 0.97, th = rand(0, Math.PI * 2), r = Math.sqrt(1 - y * y);
+    pos.set([Math.cos(th) * r * 3800, y * 3800, Math.sin(th) * r * 3800], i * 3); tam[i] = Math.random() < 0.05 ? rand(2.4, 3.6) : rand(0.7, 1.8);
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('aT', new THREE.BufferAttribute(tam, 1));
+  const m = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, uniforms: { uO: { value: 0 }, uT: { value: 0 }, uPR: { value: pr } },
+    vertexShader: 'attribute float aT; uniform float uPR, uT; varying float vB; void main(){ vB = 0.55 + 0.45 * sin(uT * (0.7 + aT) + position.x * 0.01); gl_PointSize = aT * uPR * 1.6; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
+    fragmentShader: 'uniform float uO; varying float vB; void main(){ float d = length(gl_PointCoord - 0.5); float a = smoothstep(0.5, 0.0, d); gl_FragColor = vec4(vec3(1.0, 0.95, 0.9) * 0.9, a * uO * vB); }' });
+  const p = new THREE.Points(g, m); p.frustumCulled = false; p.renderOrder = -1; scene.add(p); return m;
+})();
+
+// ---------- Estado del día ----------
+const estado = { alt: 13, nubesLluvia: 0, tiempo: 1 };
+const solDir = new THREE.Vector3(), AZ = 0.12;
+function dirSol(alt) { const a = alt * D2R; return solDir.set(Math.sin(AZ) * Math.cos(a), Math.sin(a), -Math.cos(AZ) * Math.cos(a)).normalize(); }
+
+const luzSol = new THREE.DirectionalLight(0xffffff, 3);
+const luzCielo = new THREE.HemisphereLight(0x8899cc, 0x2a1410, 1);
+const luzFrente = new THREE.DirectionalLight(0xffe6d0, 0.35); luzFrente.position.set(0, 6, 30);
+scene.add(luzSol, luzCielo, luzFrente);
+scene.fog = new THREE.FogExp2(0x886677, 0.0021);
+
+// ---------- Ruido ----------
+function h2(x, y, s = 0) { const v = Math.sin(x * 127.1 + y * 311.7 + s * 74.7) * 43758.5453; return v - Math.floor(v); }
+function ruido2(x, y, s = 0) {
+  const ix = Math.floor(x), iy = Math.floor(y), ux = suave(x - ix), uy = suave(y - iy);
+  return lerp(lerp(h2(ix, iy, s), h2(ix + 1, iy, s), ux), lerp(h2(ix, iy + 1, s), h2(ix + 1, iy + 1, s), ux), uy);
+}
+const fbm2 = (x, y, s = 0) => ruido2(x, y, s) * 0.5 + ruido2(x * 2.03, y * 2.03, s + 1) * 0.27 + ruido2(x * 4.1, y * 4.1, s + 2) * 0.15 + ruido2(x * 8.3, y * 8.3, s + 3) * 0.08;
+
+// ---------- El valle: tierra roja, surcos de agave y cerros ----------
+function altura(x, z) {
+  const lejos = suavecito(-90, -520, z);
+  const suelo = (fbm2(x * 0.02, z * 0.02, 7) - 0.5) * lerp(0.3, 1.6, suavecito(0, -30, z)) * (1 - lejos);
+  return suelo + lejos * (Math.pow(fbm2(x * 0.0042 + 3, z * 0.0042, 3), 1.6) * 70 + lejos * 10);
+}
+(() => {
+  const g = new THREE.PlaneGeometry(1700, 1250, 240, 200); g.rotateX(-Math.PI / 2); g.translate(0, 0, -505);
+  const p = g.attributes.position, col = new Float32Array(p.count * 3), c = new THREE.Color(), rojo = new THREE.Color(0x5a2416), verde = new THREE.Color(0x2c3424), roca = new THREE.Color(0x3d2a26);
+  for (let i = 0; i < p.count; i++) {
+    const x = p.getX(i), z = p.getZ(i); p.setY(i, altura(x, z));
+    c.copy(rojo).lerp(roca, suavecito(-60, -260, z)).lerp(verde, clamp(fbm2(x * 0.01, z * 0.01, 9) * suavecito(-120, -400, z) * 1.4, 0, 1));
+    c.multiplyScalar(0.85 + 0.3 * h2(x, z, 4)); col.set([c.r, c.g, c.b], i * 3);
+  }
+  g.setAttribute('color', new THREE.BufferAttribute(col, 3)); g.computeVertexNormals();
+  scene.add(new THREE.Mesh(g, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1 })));
+})();
+// La sierra al fondo: capas que se pierden en la bruma
+const sierras = [[-760, 40, 50, 0.006, 11, 0.62], [-1050, 48, 62, 0.0045, 12, 0.76], [-1400, 60, 80, 0.0032, 13, 0.86]].map(([z, base, amp, f, s, bruma]) => {
+  const sh = new THREE.Shape(); sh.moveTo(-2600, -80);
+  for (let x = -2600; x <= 2600; x += 8) sh.lineTo(x, base + amp * Math.pow(fbm2(x * f, 0.5, s), 1.4) - amp * 0.3);
+  sh.lineTo(2600, -80); sh.closePath();
+  const m = new THREE.Mesh(new THREE.ShapeGeometry(sh), new THREE.MeshBasicMaterial({ color: 0, fog: false })); m.position.z = z; m.renderOrder = -1; scene.add(m);
+  return { m, bruma };
+});
+
+// ---------- Agaves azules ----------
+function geoAgave() {
+  const pos = [], col = [], hojas = 16, lado = new THREE.Vector3(), v = new THREE.Vector3();
+  const base = new THREE.Color(0x15302f), punta = new THREE.Color(0x6f9a9a), quemada = new THREE.Color(0x8a6a4a);
+  for (let i = 0; i < hojas; i++) {
+    const a = (i / hojas) * Math.PI * 2 + rand(-0.2, 0.2), incl = i < 4 ? rand(0.05, 0.3) : rand(0.45, 1.15), largo = rand(1.0, 1.6), ancho = rand(0.08, 0.12);
+    const dir = new THREE.Vector3(Math.sin(incl) * Math.cos(a), Math.cos(incl), Math.sin(incl) * Math.sin(a));
+    lado.set(-Math.sin(a), 0, Math.cos(a)).multiplyScalar(ancho);
+    const mid = dir.clone().multiplyScalar(largo * 0.5); mid.y += 0.07 * Math.sin(incl);
+    const tip = dir.clone().multiplyScalar(largo); tip.y -= 0.14 * Math.sin(incl) * Math.sin(incl);
+    const b1 = lado.clone().negate(), b2 = lado.clone(), m1 = mid.clone().sub(v.copy(lado).multiplyScalar(0.85)), m2 = mid.clone().add(v.copy(lado).multiplyScalar(0.85));
+    const cm = base.clone().lerp(punta, 0.55), ct = punta.clone().lerp(quemada, Math.random() * 0.35);
+    pos.push(...b1.toArray(), ...b2.toArray(), ...m2.toArray(), ...b1.toArray(), ...m2.toArray(), ...m1.toArray(), ...m1.toArray(), ...m2.toArray(), ...tip.toArray());
+    for (const cc of [base, base, cm, base, cm, cm, cm, cm, ct]) col.push(cc.r, cc.g, cc.b);
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3)); g.computeVertexNormals(); return g;
+}
+(() => {
+  const lugares = [];
+  for (let x = -80; x <= 80; x += 2.45) {
+    for (let z = 5.5; z > -130; z -= (z > -55 ? 2.0 : 3.6)) {
+      if (Math.abs(x) > 7 + (12 - z) * 0.6) continue;
+      if (Math.abs(x) < 1.0 && z > 0) continue; // un pasillo enfrente
+      const xx = x + rand(-0.25, 0.25), zz = z + rand(-0.3, 0.3);
+      lugares.push([xx, altura(xx, zz) - 0.05, zz, rand(0.85, 1.2) * (z < -55 ? 1.3 : 1)]);
+    }
+  }
+  const m = new THREE.InstancedMesh(geoAgave(), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.55, side: THREE.DoubleSide }), lugares.length), o = new THREE.Object3D();
+  lugares.forEach(([x, y, z, s], i) => { o.position.set(x, y, z); o.rotation.set(rand(-0.06, 0.06), rand(0, 6.28), rand(-0.06, 0.06)); o.scale.setScalar(s); o.updateMatrix(); m.setMatrixAt(i, o.matrix); });
+  scene.add(m);
+})();
+
+// ---------- Nubes que se pintan con el sol ----------
+const nubes = new THREE.Mesh(new THREE.PlaneGeometry(9000, 9000, 1, 1), new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, fog: false, side: THREE.DoubleSide,
+  uniforms: { uSol: { value: solDir }, uLuz: { value: new THREE.Color() }, uSombra: { value: new THREE.Color() }, uT: { value: 0 }, uCob: { value: 0.5 }, uOp: { value: 1 } },
+  vertexShader: 'varying vec3 vW; void main(){ vec4 w = modelMatrix * vec4(position,1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }',
+  fragmentShader: `
+    uniform vec3 uSol, uLuz, uSombra; uniform float uT, uCob, uOp; varying vec3 vW;
+    float h(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+    float r(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.0-2.0*f); return mix(mix(h(i), h(i+vec2(1,0)), u.x), mix(h(i+vec2(0,1)), h(i+vec2(1,1)), u.x), u.y); }
+    float fbm(vec2 p){ float s = 0.0, a = 0.5; for (int i = 0; i < 5; i++){ s += a * r(p); p = p * 2.07 + 13.1; a *= 0.5; } return s; }
+    void main(){
+      vec2 p = vW.xz * 0.0011 + vec2(uT * 0.0035, uT * 0.001);
+      float n = fbm(p + 0.7 * fbm(p * 1.6 + 4.0));
+      float d = smoothstep(uCob, uCob + 0.22, n);
+      float grueso = smoothstep(uCob + 0.1, uCob + 0.42, n);
+      vec3 v = normalize(vW - cameraPosition);
+      float mu = max(dot(v, uSol), 0.0);
+      vec3 c = mix(uLuz * 1.15, uSombra, grueso * 0.75);
+      c += uLuz * (pow(mu, 6.0) * 1.6 + pow(mu, 40.0) * 2.5) * (1.0 - grueso * 0.7);
+      float lejos = 1.0 - smoothstep(1200.0, 4200.0, length(vW.xz - cameraPosition.xz));
+      gl_FragColor = vec4(c, d * uOp * lejos);
+    }`,
+}));
+nubes.rotation.x = Math.PI / 2; nubes.position.y = 520; scene.add(nubes);
+
+// Nubes de la "lluvia" (cerquita)
+const texNube = (() => {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 128; const x = c.getContext('2d');
+  for (let i = 0; i < 30; i++) {
+    const px = rand(40, 216), py = rand(50, 92) - Math.max(0, 40 - Math.abs(px - 128) * 0.35) * 0.6, r = rand(18, 40);
+    const g = x.createRadialGradient(px, py, 0, px, py, r); g.addColorStop(0, 'rgba(255,255,255,.5)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, 256, 128);
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+})();
+const nubesLluvia = [];
+for (let i = 0; i < 8; i++) {
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: texNube, transparent: true, depthWrite: false, opacity: 0, fog: false }));
+  const w = rand(22, 34); s.scale.set(w, w * 0.45, 1);
+  const x = (i - 3.5) * 8 + rand(-2, 2); s.position.set(x, rand(22, 27), rand(-26, -20)); s.userData.x = x;
+  scene.add(s); nubesLluvia.push(s);
+}
+
+// ---------- Pájaros, polvito dorado, luciérnagas ----------
+const pajaros = [], matPajaro = new THREE.MeshBasicMaterial({ color: 0x120a10, side: THREE.DoubleSide, fog: false });
+for (let i = 0; i < 9; i++) {
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(18), 3));
+  const m = new THREE.Mesh(g, matPajaro); m.frustumCulled = false; m.visible = false; scene.add(m);
+  const fila = Math.floor((i + 1) / 2), ladoV = i % 2 ? 1 : -1;
+  pajaros.push({ m, ox: -fila * 7, oy: fila * 2.4 * ladoV, oz: fila * 2 * ladoV, f: rand(0, 6), s: rand(0.9, 1.15) });
+}
+const bandada = { activo: false, t: 0, x0: -260, y: 32, z: -200 };
+function volarPajaros() { bandada.activo = true; bandada.t = 0; bandada.y = rand(28, 38); }
+
+function puntosBrillo(n, color, tam, parpadeo = 0) {
+  const g = new THREE.BufferGeometry(), pos = new Float32Array(n * 3), sem = new Float32Array(n);
+  for (let i = 0; i < n; i++) sem[i] = Math.random() * 100;
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('aS', new THREE.BufferAttribute(sem, 1));
+  const m = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false,
+    uniforms: { uO: { value: 0 }, uT: { value: 0 }, uC: { value: new THREE.Color(color) }, uTam: { value: tam }, uPR: { value: pr }, uParpadeo: { value: parpadeo } },
+    vertexShader: 'attribute float aS; uniform float uT, uTam, uPR, uParpadeo; varying float vA; void main(){ vec4 mv = modelViewMatrix * vec4(position,1.0); float b = 0.5 + 0.5 * sin(uT * (1.3 + fract(aS) * 2.0) + aS); vA = mix(1.0, smoothstep(0.55, 1.0, b), uParpadeo); gl_PointSize = uTam * uPR * (40.0 / -mv.z); gl_Position = projectionMatrix * mv; }',
+    fragmentShader: 'uniform vec3 uC; uniform float uO; varying float vA; void main(){ float d = length(gl_PointCoord - 0.5); float a = pow(smoothstep(0.5, 0.0, d), 1.6); gl_FragColor = vec4(uC, a * uO * vA); }' });
+  const p = new THREE.Points(g, m); p.frustumCulled = false; scene.add(p);
+  return { p, pos, m, n, v: Array.from({ length: n }, () => new THREE.Vector3(rand(-0.15, 0.15), rand(-0.05, 0.12), rand(-0.1, 0.1))) };
+}
+const polvo = puntosBrillo(180, 0xffd59a, 0.9);
+for (let i = 0; i < polvo.n; i++) polvo.pos.set([rand(-9, 9), rand(0.5, 7), rand(-10, 9)], i * 3);
+const luciernagas = puntosBrillo(140, 0xd8ff7a, 2.2, 1);
+for (let i = 0; i < luciernagas.n; i++) { const x = rand(-12, 12), z = rand(-30, 8); luciernagas.pos.set([x, altura(x, z) + rand(0.3, 2.2), z], i * 3); }
+
+// ---------- Farolitos ----------
+const texFarol = (() => {
+  const c = document.createElement('canvas'); c.width = 64; c.height = 128; const x = c.getContext('2d');
+  const g = x.createLinearGradient(0, 128, 0, 0); g.addColorStop(0, '#fff2c4'); g.addColorStop(0.35, '#ffb45c'); g.addColorStop(0.85, '#e0592c'); g.addColorStop(1, '#8a2a18');
+  x.fillStyle = g; x.fillRect(0, 0, 64, 128); x.strokeStyle = 'rgba(120,40,20,.35)'; x.lineWidth = 2; for (let i = 8; i < 64; i += 14) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i, 128); x.stroke(); }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+})();
+const texHalo = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
+  const g = x.createRadialGradient(64, 64, 0, 64, 64, 64); g.addColorStop(0, 'rgba(255,200,120,.9)'); g.addColorStop(0.25, 'rgba(255,150,70,.35)'); g.addColorStop(1, 'rgba(255,120,50,0)');
+  x.fillStyle = g; x.fillRect(0, 0, 128, 128); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+})();
+const geoFarol = new THREE.CylinderGeometry(0.26, 0.19, 0.5, 14, 1, true);
+const matFarol = new THREE.MeshBasicMaterial({ map: texFarol, side: THREE.DoubleSide, color: new THREE.Color(2.4, 2.0, 1.7), fog: false });
+const faroles = [];
+function soltarFarol(x, y, z, esc = 1) {
+  const grupo = new THREE.Group(), cuerpo = new THREE.Mesh(geoFarol, matFarol);
+  const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: texHalo, color: new THREE.Color(1.6, 1.2, 0.9), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }));
+  halo.scale.set(2.4, 2.4, 1); grupo.add(cuerpo, halo); grupo.position.set(x, y, z); grupo.scale.setScalar(esc);
+  grupo.userData = { v: rand(0.9, 1.5), f: rand(0, 6) }; scene.add(grupo); faroles.push(grupo);
+}
+
+// ---------- Pizza ----------
+function texturaPizza(conPepperoni = true, quesosa = false) {
+  const S = 512, c = document.createElement('canvas'); c.width = c.height = S; const x = c.getContext('2d'), m = S / 2;
+  const b = document.createElement('canvas'); b.width = b.height = S; const y = b.getContext('2d'); // relieve
+  y.fillStyle = '#000'; y.fillRect(0, 0, S, S);
+  let g = x.createRadialGradient(m, m, m * 0.76, m, m, m); g.addColorStop(0, '#EDB15C'); g.addColorStop(0.5, '#CF8236'); g.addColorStop(0.85, '#A2561F'); g.addColorStop(1, '#6E3612');
+  x.fillStyle = g; x.beginPath(); x.arc(m, m, m, 0, Math.PI * 2); x.fill();
+  g = y.createRadialGradient(m, m, m * 0.78, m, m, m); g.addColorStop(0, '#666'); g.addColorStop(0.5, '#fff'); g.addColorStop(1, '#333'); y.fillStyle = g; y.beginPath(); y.arc(m, m, m, 0, 6.29); y.fill();
+  for (let i = 0; i < 60; i++) { const a = rand(0, 6.28), r = m * rand(0.85, 0.97); x.fillStyle = `rgba(90,40,10,${rand(0.15, 0.4)})`; x.beginPath(); x.arc(m + Math.cos(a) * r, m + Math.sin(a) * r, rand(3, 9), 0, 6.28); x.fill(); }
+  x.fillStyle = '#A91F15'; x.beginPath(); x.arc(m, m, m * 0.83, 0, Math.PI * 2); x.fill();
+  y.fillStyle = '#555'; y.beginPath(); y.arc(m, m, m * 0.83, 0, 6.29); y.fill();
+  if (quesosa) {
+    g = x.createRadialGradient(m, m, 0, m, m, m * 0.8); g.addColorStop(0, '#FFE39A'); g.addColorStop(0.8, '#FBC764'); g.addColorStop(1, '#E39C45');
+    x.fillStyle = g; x.beginPath(); x.arc(m, m, m * 0.8, 0, Math.PI * 2); x.fill();
+  }
+  for (let i = 0; i < 90; i++) { // queso derretido con burbujas doradas
+    const a = rand(0, 6.28), r = Math.sqrt(Math.random()) * m * 0.78, px = m + Math.cos(a) * r, py = m + Math.sin(a) * r, rr = rand(12, 36);
+    g = x.createRadialGradient(px, py, 0, px, py, rr); g.addColorStop(0, 'rgba(255,230,150,.95)'); g.addColorStop(0.6, 'rgba(250,198,92,.85)'); g.addColorStop(1, 'rgba(235,160,60,0)');
+    x.fillStyle = g; x.beginPath(); x.arc(px, py, rr, 0, Math.PI * 2); x.fill();
+    g = y.createRadialGradient(px, py, 0, px, py, rr); g.addColorStop(0, 'rgba(255,255,255,.55)'); g.addColorStop(1, 'rgba(255,255,255,0)'); y.fillStyle = g; y.beginPath(); y.arc(px, py, rr, 0, 6.28); y.fill();
+    if (Math.random() < 0.18) { x.fillStyle = 'rgba(160,90,30,.45)'; x.beginPath(); x.arc(px + rand(-6, 6), py + rand(-6, 6), rand(3, 7), 0, 6.28); x.fill(); }
+  }
+  if (conPepperoni) for (let i = 0; i < 15; i++) {
+    const a = rand(0, 6.28), r = Math.sqrt(Math.random()) * m * 0.66, px = m + Math.cos(a) * r, py = m + Math.sin(a) * r, rr = rand(22, 30);
+    g = x.createRadialGradient(px - 5, py - 5, 2, px, py, rr); g.addColorStop(0, '#D4442F'); g.addColorStop(0.8, '#9C1E16'); g.addColorStop(0.95, '#5E0E0A'); g.addColorStop(1, 'rgba(70,10,8,0)');
+    x.fillStyle = g; x.beginPath(); x.arc(px, py, rr, 0, Math.PI * 2); x.fill();
+    y.fillStyle = '#bbb'; y.beginPath(); y.arc(px, py, rr * 0.9, 0, 6.28); y.fill();
+    x.fillStyle = 'rgba(60,8,6,.35)'; for (let k = 0; k < 5; k++) { x.beginPath(); x.arc(px + rand(-rr, rr) * 0.6, py + rand(-rr, rr) * 0.6, rand(1.5, 3.5), 0, 6.28); x.fill(); }
+  }
+  x.fillStyle = '#3E5A22'; for (let i = 0; i < 170; i++) { const a = rand(0, 6.28), r = Math.sqrt(Math.random()) * m * 0.8; x.fillRect(m + Math.cos(a) * r, m + Math.sin(a) * r, 3, 2); }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  return { t, tb: new THREE.CanvasTexture(b) };
+}
+const PIZZA = texturaPizza(true), PIZZA_SOLA = texturaPizza(false, true);
+const matCorteza = new THREE.MeshStandardMaterial({ color: 0xc8803c, roughness: 0.85, emissive: 0x5a2c0e, fog: false });
+const matArriba = new THREE.MeshStandardMaterial({ map: PIZZA.t, bumpMap: PIZZA.tb, bumpScale: 2.5, roughness: 0.5, emissive: 0xffffff, emissiveMap: PIZZA.t, emissiveIntensity: 0.3, fog: false });
+const matArribaSola = new THREE.MeshStandardMaterial({ map: PIZZA_SOLA.t, bumpMap: PIZZA_SOLA.tb, bumpScale: 2.5, roughness: 0.5, emissive: 0xffffff, emissiveMap: PIZZA_SOLA.t, emissiveIntensity: 0.3, fog: false });
+const geoPizza = new THREE.CylinderGeometry(1, 1, 0.13, 56);
+const nuevaPizza = (sola = false) => new THREE.Mesh(geoPizza, [matCorteza, sola ? matArribaSola : matArriba, matCorteza]);
+
+const pizzas = [], trozos = [];
+const geoMigas = new THREE.BufferGeometry();
+const migas = (() => {
+  const n = 300, pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
+  geoMigas.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geoMigas.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  const p = new THREE.Points(geoMigas, new THREE.PointsMaterial({ size: 0.09, vertexColors: true, transparent: true, depthWrite: false, fog: false }));
+  p.frustumCulled = false; scene.add(p); return { n, pos, col, v: new Float32Array(n * 3), vida: new Float32Array(n), sig: 0 };
+})();
+const COL_MIGAS = [new THREE.Color(0xffd27a), new THREE.Color(0xc9772f), new THREE.Color(0xb5281c)];
+const vistaEn = (d) => { const hh = d * Math.tan(camera.fov * D2R / 2); return { hh, hw: hh * camera.aspect }; };
+const _adelante = new THREE.Vector3(), _der = new THREE.Vector3();
+
+function soltarPizza() {
+  const d = rand(14, 21), { hw, hh } = vistaEn(d), p = nuevaPizza(), r = camera.aspect < 0.8 ? 1.05 : 1.2;
+  p.scale.setScalar(r);
+  camera.getWorldDirection(_adelante); _der.set(1, 0, 0).applyQuaternion(camera.quaternion);
+  p.position.copy(camera.position).addScaledVector(_adelante, d).addScaledVector(_der, rand(-hw * 0.7, hw * 0.7)); p.position.y += hh + rand(1, 3);
+  const x0 = Math.PI / 2 * rand(0.55, 0.9); p.rotation.set(x0, rand(0, 6), 0);
+  p.userData = { v: rand(1.9, 2.8), gy: rand(-1.6, 1.6), r, x0, fase: rand(0, 6), piso: camera.position.y - hh - 3 };
+  scene.add(p); pizzas.push(p);
+}
+function reventar(p) {
+  const r = p.userData.r, base = p.position.clone(), q = p.quaternion.clone();
+  for (let k = 0; k < 8; k++) {
+    const th = k * Math.PI / 4, g = new THREE.CircleGeometry(r, 8, th, Math.PI / 4); g.rotateX(-Math.PI / 2);
+    const w = new THREE.Mesh(g, p.material[1]); w.position.copy(base); w.quaternion.copy(q);
+    const dirLocal = new THREE.Vector3(Math.cos(th + Math.PI / 8), 0, -Math.sin(th + Math.PI / 8)).applyQuaternion(q);
+    w.userData = { v: dirLocal.multiplyScalar(rand(3.5, 5.5)).add(new THREE.Vector3(0, rand(2, 4), 0)), giro: new THREE.Vector3(rand(-4, 4), rand(-4, 4), rand(-4, 4)), vida: 1.3 };
+    scene.add(w); trozos.push(w);
+  }
+  for (let i = 0; i < 40; i++) {
+    const j = migas.sig++ % migas.n; migas.pos.set([base.x, base.y, base.z], j * 3);
+    migas.v.set([rand(-5, 5), rand(-1, 6), rand(-3, 3)], j * 3); migas.vida[j] = rand(0.6, 1.2);
+    const c = COL_MIGAS[i % 3]; migas.col.set([c.r * 1.6, c.g * 1.6, c.b * 1.6], j * 3);
+  }
+  scene.remove(p); pizzas.splice(pizzas.indexOf(p), 1);
+}
+function despejar() { for (const p of pizzas) p.userData.v = Math.max(p.userData.v, 10); }
+
+// ---------- La pizza gigante con CARITO de pepperoni ----------
+let gigante = null;
+const geoPep = new THREE.CylinderGeometry(1, 1, 0.05, 20);
+const matPep = new THREE.MeshStandardMaterial({ color: 0xa8231a, roughness: 0.45, emissive: 0x420a06, fog: false });
+function puntosDeNombre(n) {
+  const c = document.createElement('canvas'); c.width = 600; c.height = 200; const x = c.getContext('2d');
+  x.fillStyle = '#fff'; x.font = '800 150px "Bricolage Grotesque", system-ui, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillText(CONFIG.apodo.toUpperCase(), 300, 104);
+  const d = x.getImageData(0, 0, 600, 200).data, pts = [];
+  let paso = 14;
+  for (; paso >= 5; paso--) {
+    pts.length = 0;
+    for (let yy = 0; yy < 200; yy += paso) for (let xx = (yy / paso) % 2 ? paso / 2 : 0; xx < 600; xx += paso) if (d[(Math.floor(yy) * 600 + Math.floor(xx)) * 4 + 3] > 128) pts.push([xx, yy]);
+    if (pts.length >= n) break;
+  }
+  let a = 1e9, b = -1e9, c2 = 1e9, d2 = -1e9; for (const [px, py] of pts) { a = Math.min(a, px); b = Math.max(b, px); c2 = Math.min(c2, py); d2 = Math.max(d2, py); }
+  const esc = 1.68 / ((b - a) / 2), cx = (a + b) / 2, cy = (c2 + d2) / 2;
+  return { pts: pts.map(([px, py]) => [(px - cx) * esc / 2, (py - cy) * esc / 2]), sep: paso * esc / 2 };
+}
+function crearGigante() {
+  const grupo = new THREE.Group(), pizza = nuevaPizza(true); pizza.rotation.x = Math.PI / 2; grupo.add(pizza);
+  const { pts, sep } = puntosDeNombre(260), n = pts.length, inst = new THREE.InstancedMesh(geoPep, matPep, n), desde = [], hacia = [];
+  for (let i = 0; i < n; i++) { const a = rand(0, 6.28), r = Math.sqrt(Math.random()) * 0.72; desde.push(new THREE.Vector2(Math.cos(a) * r, Math.sin(a) * r)); hacia.push(new THREE.Vector2(pts[i][0], pts[i][1])); }
+  pizza.add(inst);
+  gigante = { grupo, pizza, inst, desde, hacia, tam: sep * 0.47, t: 0, llego: false, atrapada: false, orden: -1, saliendo: 0 };
+  colocarPep(0); scene.add(grupo);
+}
+const _o = new THREE.Object3D();
+function colocarPep(k) {
+  const g = gigante;
+  for (let i = 0; i < g.desde.length; i++) {
+    const e = suave(clamp(k * 1.35 - (i / g.desde.length) * 0.35, 0, 1));
+    _o.position.set(lerp(g.desde[i].x, g.hacia[i].x, e), 0.07 + Math.sin(e * Math.PI) * 0.35, lerp(g.desde[i].y, g.hacia[i].y, e));
+    _o.rotation.set(0, i, 0); _o.scale.set(g.tam, 1, g.tam); _o.updateMatrix(); g.inst.setMatrixAt(i, _o.matrix);
+  }
+  g.inst.instanceMatrix.needsUpdate = true;
+}
+const _arriba = new THREE.Vector3();
+function ubicarGigante(dt) {
+  const g = gigante; if (!g) return;
+  g.t += dt;
+  const R = 0.86 * Math.min(1, camera.aspect), d = 1 / (R * Math.tan(camera.fov * D2R / 2)), hh = vistaEn(d).hh;
+  camera.getWorldDirection(_adelante); _arriba.set(0, 1, 0).applyQuaternion(camera.quaternion);
+  const llegada = enOut(clamp(g.t / 2.6, 0, 1)), fuera = g.saliendo ? enOut(clamp(g.saliendo / 2.2, 0, 1)) : 0; g.llego = g.t > 2.6;
+  g.grupo.position.copy(camera.position).addScaledVector(_adelante, d).addScaledVector(_arriba, (1 - llegada) * hh * 2.2 - fuera * hh * 2.6);
+  g.grupo.quaternion.copy(camera.quaternion);
+  if (g.atrapada) { const fin = Math.round(g.pizza.rotation.y / (Math.PI * 2)) * Math.PI * 2; g.pizza.rotation.y = lerp(g.pizza.rotation.y, fin, Math.min(1, dt * 4)); g.pizza.rotation.z = 0; }
+  else { g.pizza.rotation.y = g.t * 1.6; g.pizza.rotation.z = Math.sin(g.t * 1.3) * 0.12; }
+  if (g.orden >= 0) { g.orden = Math.min(1, g.orden + dt / 2.4); colocarPep(g.orden); }
+}
+
+// ---------- Posproceso: rayos de sol entre los cerros, destello de lente, grano de película ----------
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const rayos = new ShaderPass({
+  uniforms: { tDiffuse: { value: null }, uSol: { value: new THREE.Vector2(0.5, 0.5) }, uFuerza: { value: 0 }, uFlare: { value: 0 }, uColor: { value: new THREE.Color(1, 0.7, 0.45) }, uAsp: { value: 1 }, uUmbral: { value: 2 } },
+  vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
+  fragmentShader: `
+    uniform sampler2D tDiffuse; uniform vec2 uSol; uniform float uFuerza, uFlare, uAsp, uUmbral; uniform vec3 uColor; varying vec2 vUv;
+    void main(){
+      vec4 base = texture2D(tDiffuse, vUv);
+      vec3 extra = vec3(0.0);
+      if (uFuerza > 0.002) {
+        vec2 paso = (vUv - uSol) / 36.0 * 0.92; vec2 p = vUv; float caida = 1.0; vec3 acc = vec3(0.0);
+        for (int i = 0; i < 36; i++) { p -= paso; vec3 s = min(texture2D(tDiffuse, p).rgb, vec3(uUmbral * 2.5)); float l = clamp(dot(s, vec3(0.3, 0.59, 0.11)) / uUmbral - 1.0, 0.0, 1.0); acc += s * l * caida; caida *= 0.955; }
+        extra += acc / 36.0 * uFuerza * 0.5 * uColor;
+      }
+      if (uFlare > 0.002) {
+        vec2 eje = vec2(0.5) - uSol;
+        for (int k = 0; k < 4; k++) {
+          float t = 0.45 + float(k) * 0.42; vec2 c = uSol + eje * t * 1.6; float r = 0.025 + float(k) * 0.018;
+          float dd = length((vUv - c) * vec2(uAsp, 1.0));
+          extra += uColor * vec3(0.9, 0.75 + 0.06 * float(k), 0.6) * smoothstep(r, r * 0.55, dd) * 0.07 * uFlare;
+        }
+        vec2 q = (vUv - uSol) * vec2(uAsp, 1.0);
+        extra += uColor * exp(-abs(q.y) * 220.0) * exp(-abs(q.x) * 3.2) * 0.35 * uFlare;
+      }
+      gl_FragColor = vec4(base.rgb + extra, base.a);
+    }`,
+});
+composer.addPass(rayos);
+const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.5, 0.65, 0.88);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+const grano = new ShaderPass({
+  uniforms: { tDiffuse: { value: null }, uT: { value: 0 } },
+  vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
+  fragmentShader: `
+    uniform sampler2D tDiffuse; uniform float uT; varying vec2 vUv;
+    float h(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+    void main(){
+      vec3 c = texture2D(tDiffuse, vUv).rgb;
+      float v = smoothstep(1.05, 0.25, length((vUv - 0.5) * vec2(1.0, 1.15)) * 1.2);
+      c *= mix(0.62, 1.0, v);
+      float l = dot(c, vec3(0.299, 0.587, 0.114));
+      c = mix(vec3(l), c, 1.22);
+      c *= mix(vec3(0.9, 0.98, 1.08), vec3(1.07, 1.0, 0.9), smoothstep(0.08, 0.75, l));
+      c = clamp(c, 0.0, 1.0);
+      c += (h(vUv * vec2(1373.0, 997.0) + fract(uT) * 31.0) - 0.5) * 0.045;
+      gl_FragColor = vec4(c, 1.0);
+    }`,
+});
+composer.addPass(grano);
+
+// ---------- Música: piano triste, tocado en vivo (sin archivos) ----------
+const Sonido = (() => {
+  let AC = null, salida = null, rev = null, ruido = null, etiqueta = null, nivel = 0, sig = 0, paso = 0, mudo = false, vientoG = null, grillos = 0, sigGrillo = 0;
+  const BPM = 62, CORCHEA = 60 / BPM / 2;
+  // La menor: Lam – Fa – Do – Sol | Lam – Fa – Do – Mi
+  const ACORDES = [[45, 52, 57, 60, 64], [41, 48, 53, 57, 60], [48, 55, 60, 64, 67], [43, 50, 55, 59, 62], [45, 52, 57, 60, 64], [41, 48, 53, 57, 60], [48, 55, 60, 64, 67], [40, 47, 52, 56, 59]];
+  const ARP = [0, 1, 2, 3, 4, 3, 2, 1];
+  const MELODIA = [[0, 0, 76, 3], [0, 3, 74, 1], [0, 4, 72, 4], [1, 0, 72, 3], [1, 3, 71, 1], [1, 4, 69, 4], [2, 0, 67, 3], [2, 3, 69, 1], [2, 4, 72, 4], [3, 0, 71, 7],
+    [4, 0, 76, 3], [4, 3, 74, 1], [4, 4, 76, 4], [5, 0, 77, 3], [5, 3, 76, 1], [5, 4, 72, 4], [6, 0, 74, 2], [6, 2, 72, 2], [6, 4, 71, 2], [6, 6, 67, 2], [7, 0, 68, 6], [7, 6, 71, 2]];
+  const hz = (m) => 440 * Math.pow(2, (m - 69) / 12);
+  function wavSilencio() {
+    const n = 4000, b = new ArrayBuffer(44 + n), d = new DataView(b), s = (o, t) => { for (let i = 0; i < t.length; i++) d.setUint8(o + i, t.charCodeAt(i)); };
+    s(0, 'RIFF'); d.setUint32(4, 36 + n, true); s(8, 'WAVE'); s(12, 'fmt '); d.setUint32(16, 16, true); d.setUint16(20, 1, true); d.setUint16(22, 1, true);
+    d.setUint32(24, 8000, true); d.setUint32(28, 8000, true); d.setUint16(32, 1, true); d.setUint16(34, 8, true); s(36, 'data'); d.setUint32(40, n, true);
+    for (let i = 0; i < n; i++) d.setUint8(44 + i, 128);
+    let bin = ''; const u8 = new Uint8Array(b); for (let i = 0; i < u8.length; i++) bin += String.fromCharCode(u8[i]); return 'data:audio/wav;base64,' + btoa(bin);
+  }
+  function iniciar() {
+    if (AC) { AC.resume?.(); return; }
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch { /* no soportado */ }
+    try { etiqueta = new Audio(wavSilencio()); etiqueta.loop = true; etiqueta.setAttribute('playsinline', ''); etiqueta.play().catch(() => {}); } catch { /* nada */ }
+    const Ctx = window.AudioContext || window.webkitAudioContext; if (!Ctx) return;
+    AC = new Ctx(); AC.resume?.();
+    const comp = AC.createDynamicsCompressor(); comp.threshold.value = -20; comp.ratio.value = 3.5;
+    const maestro = AC.createGain(); maestro.gain.value = 2.2; // que se oiga bien en la bocina del cel
+    salida = AC.createGain(); salida.connect(comp); comp.connect(maestro); maestro.connect(AC.destination);
+    const conv = AC.createConvolver(), n = AC.sampleRate * 4.2, b = AC.createBuffer(2, n, AC.sampleRate);
+    for (let c = 0; c < 2; c++) { const d = b.getChannelData(c); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 2.6); }
+    conv.buffer = b; rev = AC.createGain(); rev.gain.value = 0.55; rev.connect(conv); conv.connect(salida);
+    ruido = AC.createBuffer(1, AC.sampleRate * 2, AC.sampleRate); const dd = ruido.getChannelData(0); for (let i = 0; i < dd.length; i++) dd[i] = Math.random() * 2 - 1;
+    const vs = AC.createBufferSource(); vs.buffer = ruido; vs.loop = true; const vf = AC.createBiquadFilter(); vf.type = 'bandpass'; vf.frequency.value = 420; vf.Q.value = 0.4;
+    vientoG = AC.createGain(); vientoG.gain.value = 0; vs.connect(vf); vf.connect(vientoG); vientoG.connect(salida);
+    const lfo = AC.createOscillator(), lg = AC.createGain(); lfo.frequency.value = 0.08; lg.gain.value = 260; lfo.connect(lg); lg.connect(vf.frequency); lfo.start(); vs.start();
+    const s0 = AC.createBufferSource(); s0.buffer = AC.createBuffer(1, 1, 22050); s0.connect(AC.destination); s0.start(0);
+    sig = AC.currentTime + 0.25; setInterval(programar, 60);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) { AC.suspend(); etiqueta?.pause(); } else { AC.resume(); etiqueta?.play().catch(() => {}); sig = Math.max(sig, AC.currentTime + 0.1); } });
+  }
+  function piano(m, t, vel = 0.5, dur = 3) {
+    const f = hz(m), fl = AC.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.value = 1400 + vel * 3200;
+    const out = AC.createGain(); fl.connect(out); out.connect(salida);
+    const w = AC.createGain(); w.gain.value = 0.55; out.connect(w); w.connect(rev);
+    [1, 0.4, 0.2, 0.1, 0.05].forEach((a, i) => {
+      const n = i + 1, o = AC.createOscillator(); o.frequency.value = f * n * Math.sqrt(1 + 0.00035 * n * n);
+      const g = AC.createGain(), amp = a * vel * 0.16, caida = dur * (1.5 / (1 + i * 0.8)) * (m > 74 ? 0.75 : 1);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(amp, t + 0.005); g.gain.exponentialRampToValueAtTime(amp * 0.32, t + 0.3); g.gain.exponentialRampToValueAtTime(0.0001, t + caida);
+      o.connect(g); g.connect(fl); o.start(t); o.stop(t + caida + 0.05);
+    });
+    const s = AC.createBufferSource(); s.buffer = ruido; const nf = AC.createBiquadFilter(); nf.type = 'bandpass'; nf.frequency.value = Math.min(f * 3, 8000); const ng = AC.createGain();
+    ng.gain.setValueAtTime(vel * 0.02, t); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.03); s.connect(nf); nf.connect(ng); ng.connect(out); s.start(t); s.stop(t + 0.05);
+  }
+  function cuerdas(notas, t, dur, vol) {
+    notas.forEach((m, i) => [-7, 7].forEach((det) => {
+      const o = AC.createOscillator(); o.type = 'sawtooth'; o.frequency.value = hz(m); o.detune.value = det + i * 2;
+      const fl = AC.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.value = m < 50 ? 420 : 950; fl.Q.value = 0.3;
+      const g = AC.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(vol, t + dur * 0.4); g.gain.linearRampToValueAtTime(vol * 0.8, t + dur * 0.8); g.gain.linearRampToValueAtTime(0.0001, t + dur + 0.6);
+      o.connect(fl); fl.connect(g); g.connect(salida); const w = AC.createGain(); w.gain.value = 0.6; g.connect(w); w.connect(rev); o.start(t); o.stop(t + dur + 0.7);
+    }));
+  }
+  function grillo(t) {
+    const f = rand(4300, 4800);
+    for (let k = 0; k < 3; k++) { const o = AC.createOscillator(), g = AC.createGain(), t0 = t + k * 0.06; o.frequency.value = f; g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.012 * grillos, t0 + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.04); o.connect(g); g.connect(salida); o.start(t0); o.stop(t0 + 0.05); }
+  }
+  function programar() {
+    if (!AC) return;
+    while (sig < AC.currentTime + 0.35) {
+      const t = sig, compas = Math.floor(paso / 8) % 8, c = paso % 8, acorde = ACORDES[compas];
+      if (nivel >= 1) piano(acorde[ARP[c]], t, c === 0 ? 0.42 : 0.3, 3.2);
+      if (nivel >= 1 && c === 0) piano(acorde[0] - 12, t, 0.38, 4.5);
+      if (nivel >= 2) for (const [cm, cc, nota, dur] of MELODIA) if (cm === compas && cc === c) piano(nota + (nivel >= 3 ? 12 : 0), t + 0.01, 0.6, dur * CORCHEA * 2.4);
+      if (nivel >= 3 && c === 0) cuerdas([acorde[0] - 12, acorde[2], acorde[3]], t, CORCHEA * 8, 0.022);
+      sig += CORCHEA; paso++;
+    }
+    if (grillos > 0.01 && AC.currentTime > sigGrillo) { grillo(AC.currentTime + 0.05); sigGrillo = AC.currentTime + rand(0.35, 1.1); }
+  }
+  const PENTA = [69, 72, 74, 76, 79, 81, 84, 86];
+  return {
+    iniciar,
+    nivel(n) { nivel = n; },
+    get nivelAhora() { return nivel; },
+    viento(v) { if (vientoG) vientoG.gain.setTargetAtTime(v * 0.05, AC.currentTime, 1.2); },
+    grillos(v) { grillos = v; },
+    nota(k = 0, vel = 0.55) { if (AC) piano(PENTA[k % PENTA.length] + 12, AC.currentTime + 0.02, vel, 2.6); },
+    soplido() {
+      if (!AC) return; const t = AC.currentTime, s = AC.createBufferSource(); s.buffer = ruido; const f = AC.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 0.7;
+      f.frequency.setValueAtTime(260, t); f.frequency.exponentialRampToValueAtTime(1800, t + 1.8); const g = AC.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.16, t + 0.8); g.gain.exponentialRampToValueAtTime(0.0001, t + 2);
+      s.connect(f); f.connect(g); g.connect(salida); s.start(t); s.stop(t + 2.1);
+    },
+    cascada() { if (!AC) return; const t = AC.currentTime; PENTA.concat(PENTA.map((m) => m + 12)).forEach((m, i) => piano(m, t + i * 0.11, 0.35, 1.8)); },
+    acorde(vol = 0.5) { if (!AC) return; const t = AC.currentTime; [57, 64, 69, 72, 76].forEach((m, i) => piano(m, t + i * 0.05, vol, 4)); },
+    mudo(m) { mudo = m; if (salida) salida.gain.setTargetAtTime(m ? 0 : 1, AC.currentTime, 0.05); if (etiqueta) etiqueta.muted = m; },
+    get mudoAhora() { return mudo; },
+  };
+})();
+
+// ---------- Textos ----------
+const cap = $('cap'), pista = $('pista'), anillo = $('anillo');
+let corrida = 0;
+class Abortar extends Error {}
+const espera = (ms, id) => new Promise((ok, mal) => setTimeout(() => (id === corrida ? ok() : mal(new Abortar())), ms));
+const hasta = (cond, id) => new Promise((ok, mal) => { const t = setInterval(() => { if (id !== corrida) { clearInterval(t); mal(new Abortar()); } else if (cond()) { clearInterval(t); ok(); } }, 90); });
+async function decir(txt, ms, id, abajo = false) {
+  cap.textContent = txt; cap.classList.toggle('abajo', abajo); cap.classList.add('on');
+  await espera(ms, id); cap.classList.remove('on'); await espera(900, id);
+}
+function mostrar(txt, abajo = false) { cap.textContent = txt; cap.classList.toggle('abajo', abajo); cap.classList.add('on'); }
+const ocultar = () => cap.classList.remove('on');
+function mostrarPista(txt) { pista.textContent = txt; pista.classList.add('on'); }
+const ocultarPista = () => pista.classList.remove('on');
+const TARJETAS = ['postal', 'pregunta', 'respuesta', 'avisoApp'];
+function tarjeta(n) { TARJETAS.forEach((t) => $(t).classList.toggle('on', t === n)); }
+
+// ---------- Animaciones ----------
+const TW = [];
+function tween(obj, k, to, ms, curva = suave) { for (let i = TW.length - 1; i >= 0; i--) if (TW[i].obj === obj && TW[i].k === k) TW.splice(i, 1); TW.push({ obj, k, de: obj[k], to, t: 0, ms, curva }); }
+
+// ---------- Historia ----------
+let fase = 'inicio', atrapadas = 0, candado = 0, lluviaRate = 0, sigPizza = 0, capturar = false, postalFoto = null, tCap = 0, tLluvia = 0;
+let detener = { activo: false, sostenido: 0, apretado: false, ritmo: 0 }, toquesFarol = 0, farolesActivos = false;
+
+function reiniciar() {
+  TW.length = 0; clearTimeout(tLluvia);
+  for (const p of [...pizzas]) scene.remove(p); pizzas.length = 0;
+  for (const w of trozos) scene.remove(w); trozos.length = 0;
+  for (const f of faroles) scene.remove(f); faroles.length = 0;
+  if (gigante) { scene.remove(gigante.grupo); gigante = null; }
+  atrapadas = 0; candado = 0; lluviaRate = 0; estado.alt = 13; estado.nubesLluvia = 0; estado.tiempo = 1;
+  detener = { activo: false, sostenido: 0, apretado: false, ritmo: 0 }; toquesFarol = 0; farolesActivos = false; cam.t = 0;
+  Sonido.grillos(0);
+  $('cuenta').classList.remove('on'); ocultarPista(); tarjeta(null); ocultar(); anillo.classList.remove('on'); $('volver').hidden = true;
+}
+
+async function historia() {
+  const id = ++corrida;
+  reiniciar(); fase = 'tarde';
+  $('negro').classList.add('on'); requestAnimationFrame(() => requestAnimationFrame(() => $('negro').classList.remove('on')));
+  Sonido.nivel(1); Sonido.viento(0.8);
+  tween(cam, 't', 1, 9500, enInOut); // la cámara sube de entre los agaves
+  try {
+    await espera(1800, id);
+    await decir(`${CONFIG.apodo}…`, 2400, id);
+    await decir(`Hoy en ${CONFIG.lugar} el sol se mete a las ${HORA_SOL}.`, 3400, id);
+    volarPajaros(); Sonido.nivel(2);
+    await decir('Y quise que este atardecer fuera tuyo.', 3200, id);
+    await decir('Pero ojo: el pronóstico dice que va a llover…', 2900, id);
+    tween(estado, 'nubesLluvia', 1, 2600); Sonido.soplido();
+    await decir('…y no precisamente agua 👀', 2400, id);
+
+    fase = 'lluvia'; lluviaRate = 1.25; sigPizza = 0; tween(estado, 'alt', 9.5, 45000, (t) => t);
+    $('cuenta').textContent = `🍕 0/${CONFIG.rebanadas.length}`; $('cuenta').classList.add('on');
+    mostrarPista('Atrapa las pizzas 👆');
+    await hasta(() => atrapadas >= CONFIG.rebanadas.length && performance.now() > candado, id);
+    lluviaRate = 0; despejar(); ocultarPista(); $('cuenta').classList.remove('on');
+    await espera(800, id);
+
+    fase = 'gigante';
+    await decir('Espérate… falta la más grande 👀', 2400, id);
+    crearGigante(); Sonido.soplido();
+    await hasta(() => gigante && gigante.llego, id);
+    mostrarPista('¡Atrápala! 👆');
+    await hasta(() => gigante.atrapada, id);
+    ocultarPista(); gigante.orden = 0; Sonido.cascada();
+    await espera(2700, id);
+    await decir('De pepperoni, como te gusta 🍕', 2700, id, true);
+    await decir('…y con tu nombre. Bueno, con el que te decía.', 3200, id, true);
+    gigante.saliendo = 0.001; tween(estado, 'nubesLluvia', 0, 3500);
+
+    // Detener el sol con el dedo
+    fase = 'detener'; Sonido.nivel(2);
+    await decir('Mira… ya se va a meter el sol.', 2800, id);
+    detener.activo = true; detener.ritmo = 0.35; // grados por segundo mientras no lo detengas
+    mostrarPista('Mantén tu dedo en la pantalla ☝️');
+    const t0 = performance.now();
+    await hasta(() => detener.sostenido > 0.25 || performance.now() - t0 > 22000, id);
+    ocultarPista(); mostrar('Si pudiera, detenía el tiempo aquí…');
+    await hasta(() => detener.sostenido > 3.4 || performance.now() - t0 > 26000, id);
+    mostrar('…en un atardecer contigo.');
+    await hasta(() => detener.sostenido > 6.4 || !detener.apretado, id);
+    await espera(1500, id); ocultar();
+    detener.activo = false; detener.apretado = false; anillo.classList.remove('on'); Sonido.nivel(2);
+    await espera(900, id);
+    await decir('Pero el sol siempre se mete.', 2800, id);
+
+    fase = 'ocaso'; capturar = true;
+    tween(estado, 'alt', -9, 17000, (t) => t * (2 - t)); volarPajaros(); Sonido.viento(0.5);
+    await decir('Y cada tarde, a esta hora…', 3000, id);
+    await decir('…me acuerdo de ti.', 3000, id);
+    await espera(2200, id);
+    Sonido.grillos(1); Sonido.nivel(3);
+    await decir(`Te extraño, ${CONFIG.apodo}.`, 3800, id);
+
+    // Farolitos
+    fase = 'faroles'; Sonido.nivel(2);
+    if (gigante) { scene.remove(gigante.grupo); gigante = null; }
+    await decir('Antes de que se acabe la noche…', 2600, id);
+    mostrar('…suelta un farolito 🏮'); mostrarPista('Toca el cielo');
+    const t1 = performance.now();
+    await hasta(() => toquesFarol >= 3 || performance.now() - t1 > 25000, id);
+    ocultarPista(); ocultar(); farolesActivos = true; Sonido.nivel(3); Sonido.acorde(0.4);
+    await espera(1800, id);
+    await decir('Uno por cada atardecer que me faltó contigo.', 4200, id);
+    await espera(1500, id);
+    fase = 'noche'; Sonido.nivel(1);
+    tarjeta('postal');
+  } catch (e) { if (!(e instanceof Abortar)) throw e; }
+}
+
+function responder(r) {
+  clearTimeout(tLluvia);
+  const R = CONFIG.respuestas[r];
+  $('rTitulo').textContent = R.titulo; $('rTexto').textContent = R.texto; $('wa').textContent = R.boton;
+  $('wa').href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(R.wa)}`;
+  tarjeta(null); fase = 'respuesta'; $('avisame').hidden = r === 'no';
+  if (r === 'si') { // hasta el sol regresa
+    Sonido.acorde(0.6); Sonido.nivel(3); Sonido.grillos(0); tween(estado, 'alt', 8, 6500); lluviaRate = 3; farolesActivos = true;
+    tLluvia = setTimeout(() => { lluviaRate = 0.5; }, 5000);
+    setTimeout(() => tarjeta('respuesta'), 2800);
+  } else if (r === 'pensar') { lluviaRate = 0; despejar(); Sonido.nivel(1); Sonido.nota(3, 0.4); setTimeout(() => tarjeta('respuesta'), 900); }
+  else { lluviaRate = 0; despejar(); farolesActivos = false; Sonido.nivel(1); setTimeout(() => tarjeta('respuesta'), 800); }
+}
+function modoLibre() { tarjeta(null); fase = 'libre'; farolesActivos = true; Sonido.nivel(2); mostrarPista('Toca el cielo 🏮'); setTimeout(ocultarPista, 2600); $('volver').hidden = false; }
+
+// ---------- Aviso de cada atardecer (lo manda Netlify, solo si ella lo pide) ----------
+const VAPID_PUBLICA = 'BBWQ00l7q1_snqwA8nu8fpyhmBidSnACoi-M-CarxSoh5C0dpy2bHXk5g95Rlh5vmYjiyN8vYJd8dkc6bSiWh7Q';
+const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const enApp = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const pushPosible = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window && window.isSecureContext && !/claude/.test(location.hostname);
+const guardar = (k, v) => { try { localStorage.setItem(k, v); } catch { /* sin almacenamiento */ } };
+const leer = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+const hoyLocal = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Mexico_City' }).format(new Date());
+const aBytes = (b64) => Uint8Array.from(atob((b64 + '='.repeat((4 - b64.length % 4) % 4)).replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0));
+const pushActivo = () => !!leer('carito_push') && 'Notification' in window && Notification.permission === 'granted';
+async function suscribirPush() {
+  const reg = await Promise.race([navigator.serviceWorker.ready, new Promise((_, mal) => setTimeout(() => mal(new Error('sin service worker')), 8000))]);
+  const sub = (await reg.pushManager.getSubscription()) || (await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: aBytes(VAPID_PUBLICA) }));
+  const r = await fetch('/api/suscribir', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sub: sub.toJSON() }) }); // el servidor decide qué día empieza su serie
+  if (!r.ok) throw new Error(`servidor ${r.status}`);
+  guardar('carito_push', hoyLocal());
+}
+function botonesAviso() { if (pushActivo()) document.querySelectorAll('.avisame').forEach((b) => (b.textContent = '🌅 Avisos activados ✓')); }
+let tAviso = 0;
+function avisar(txt) { const t = $('toast'); t.textContent = txt; t.classList.add('on'); clearTimeout(tAviso); tAviso = setTimeout(() => t.classList.remove('on'), 4200); }
+async function activarAvisos() {
+  if (esIOS && !enApp) { tarjeta('avisoApp'); return; } // en Safari no hay notificaciones: primero hay que instalarla
+  if (!pushPosible()) { avisar('Este cel no deja avisos desde aquí 😕'); return; }
+  const permiso = await Notification.requestPermission(); // va primero: el iPhone lo pide pegado al toque
+  if (permiso !== 'granted') { avisar('Está bien, sin avisos 🌅'); return; }
+  try { await suscribirPush(); botonesAviso(); avisar('Listo 🌅 Te aviso cuando se esté metiendo el sol'); }
+  catch { avisar('No se pudo ahorita 😕 Intenta en un ratito'); }
+}
+document.querySelectorAll('.avisame').forEach((b) => b.addEventListener('click', activarAvisos));
+$('avisoOk').addEventListener('click', () => tarjeta($('rTitulo').textContent ? 'respuesta' : null));
+if (pushPosible()) navigator.serviceWorker.register('sw.js').catch(() => {});
+if (enApp) $('avisameInicio').hidden = false;
+botonesAviso();
+if (pushPosible() && pushActivo() && leer('carito_push') !== hoyLocal()) suscribirPush().catch(() => {}); // la mantiene al día en el servidor
+
+// ---------- Postal ----------
+async function hacerPostal() {
+  try { await Promise.all(['italic 600 64px Fraunces', 'italic 400 40px Fraunces', '500 34px "DM Sans"'].map((f) => document.fonts.load(f))); } catch { /* letra del sistema */ }
+  const W = 1080, H = 1350, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
+  x.fillStyle = '#FFF6EC'; x.fillRect(0, 0, W, H);
+  let foto = postalFoto;
+  if (!foto) { composer.render(); foto = document.createElement('canvas'); foto.width = renderer.domElement.width; foto.height = renderer.domElement.height; foto.getContext('2d').drawImage(renderer.domElement, 0, 0); }
+  const lado = Math.min(foto.width, foto.height), sx = (foto.width - lado) / 2, sy = Math.max(0, (foto.height - lado) * 0.4);
+  x.drawImage(foto, sx, sy, lado, lado, 54, 54, W - 108, W - 108);
+  x.fillStyle = '#3B1830'; x.textAlign = 'center';
+  x.font = 'italic 600 64px Fraunces, Georgia, serif'; x.fillText(`El atardecer de ${CONFIG.apodo}`, W / 2, W + 52);
+  x.font = '500 34px "DM Sans", system-ui, sans-serif'; x.fillStyle = '#8A5A5A'; x.fillText(`${CONFIG.lugar}, Jal. · ${FECHA} · ${HORA_SOL}`, W / 2, W + 118);
+  x.font = 'italic 40px Fraunces, Georgia, serif'; x.fillStyle = '#C0563E'; x.fillText(`— ${CONFIG.de}`, W / 2, W + 186);
+  const blob = await new Promise((ok) => c.toBlob(ok, 'image/jpeg', 0.92));
+  const archivo = new File([blob], 'atardecer-de-carito.jpg', { type: 'image/jpeg' });
+  try { if (navigator.canShare?.({ files: [archivo] })) { await navigator.share({ files: [archivo], title: `El atardecer de ${CONFIG.apodo}` }); return; } } catch (e) { if (e?.name === 'AbortError') return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = archivo.name; document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+
+// ---------- Toques ----------
+const _p = new THREE.Vector3();
+function aPantalla(v) { _p.copy(v).project(camera); return [(_p.x + 1) / 2 * innerWidth, (1 - _p.y) / 2 * innerHeight, _p.z]; }
+const radioPantalla = (pos, r) => r / (camera.position.distanceTo(pos) * Math.tan(camera.fov * D2R / 2)) * innerHeight / 2;
+const vibrar = (p) => { try { navigator.vibrate?.(p); } catch { /* nada */ } };
+function farolEnToque(x, y) {
+  const v = new THREE.Vector3((x / innerWidth) * 2 - 1, -(y / innerHeight) * 2 + 1, 0.5).unproject(camera).sub(camera.position).normalize();
+  const p = camera.position.clone().addScaledVector(v, rand(16, 26));
+  soltarFarol(p.x, Math.max(p.y, altura(p.x, p.z) + 0.6), p.z, 1.1);
+}
+renderer.domElement.addEventListener('pointerdown', (e) => {
+  if (fase === 'inicio') return;
+  if (detener.activo) { detener.apretado = true; anillo.style.left = e.clientX + 'px'; anillo.style.top = e.clientY + 'px'; anillo.classList.add('on'); vibrar(10); return; }
+  if (gigante && !gigante.atrapada && gigante.llego) {
+    const [x, y] = aPantalla(gigante.grupo.position), r = radioPantalla(gigante.grupo.position, 1);
+    if (Math.hypot(e.clientX - x, e.clientY - y) < r * 1.1) { gigante.atrapada = true; Sonido.nota(4, 0.7); vibrar(30); return; }
+  }
+  let mejor = null, dMin = Infinity;
+  for (const p of pizzas) {
+    const [x, y, z] = aPantalla(p.position); if (z > 1) continue;
+    const d = Math.hypot(e.clientX - x, e.clientY - y), r = radioPantalla(p.position, p.userData.r) * 1.45 + 18;
+    if (d < r && d < dMin) { dMin = d; mejor = p; }
+  }
+  if (mejor) {
+    reventar(mejor); vibrar(15);
+    if (fase === 'lluvia' && performance.now() > candado && atrapadas < CONFIG.rebanadas.length) {
+      const txt = CONFIG.rebanadas[atrapadas]; atrapadas++; candado = performance.now() + 2600;
+      Sonido.nota(atrapadas, 0.6);
+      $('cuenta').textContent = `🍕 ${atrapadas}/${CONFIG.rebanadas.length}`; ocultarPista();
+      mostrar(txt); clearTimeout(tCap); tCap = setTimeout(ocultar, 3100);
+    } else Sonido.nota(Math.floor(rand(0, 6)), 0.35);
+    return;
+  }
+  if (['faroles', 'libre', 'noche', 'respuesta'].includes(fase)) { farolEnToque(e.clientX, e.clientY); toquesFarol++; Sonido.nota(Math.floor(rand(2, 7)), 0.4); vibrar(10); }
+});
+const soltar = () => { if (detener.apretado) { detener.apretado = false; anillo.classList.remove('on'); } };
+addEventListener('pointerup', soltar); addEventListener('pointercancel', soltar);
+
+// ---------- Botones ----------
+$('pTexto').textContent = CONFIG.pregunta;
+$('pFecha').textContent = FECHA; $('pHora').textContent = HORA_SOL;
+$('go').addEventListener('click', () => { Sonido.iniciar(); $('inicio').classList.add('fuera'); $('mute').style.display = 'block'; historia(); });
+$('mute').addEventListener('click', () => { const m = !Sonido.mudoAhora; Sonido.mudo(m); $('mute').textContent = m ? '🔇' : '🔊'; });
+$('ultima').addEventListener('click', () => { tarjeta('pregunta'); Sonido.nota(5, 0.5); });
+document.querySelectorAll('#pregunta [data-r]').forEach((b) => b.addEventListener('click', () => responder(b.dataset.r)));
+$('cambiar').addEventListener('click', () => { clearTimeout(tLluvia); lluviaRate = 0; despejar(); tween(estado, 'alt', -9, 3000); tarjeta('pregunta'); });
+$('otraVez').addEventListener('click', () => historia());
+$('guardar').addEventListener('click', () => hacerPostal().catch(() => {}));
+document.querySelectorAll('.btn-libre').forEach((b) => b.addEventListener('click', modoLibre));
+$('volver').addEventListener('click', () => { $('volver').hidden = true; clearTimeout(tLluvia); lluviaRate = 0; despejar(); tarjeta($('rTitulo').textContent ? 'respuesta' : 'postal'); fase = 'noche'; });
+
+// ---------- Cada cuadro ----------
+const reloj = new THREE.Clock();
+let tAcum = 0, tMundo = 0, fpsN = 0, fpsT = 0;
+const cTmp = new THREE.Color(), cNiebla = new THREE.Color(), cLuz = new THREE.Color(), vHoriz = new THREE.Vector3(), vArriba = new THREE.Vector3(0, 1, 0), vSombra = new THREE.Vector3();
+const C_NOCHE_NIEBLA = new THREE.Color(0.02, 0.018, 0.04), C_NOCHE_CIELO = new THREE.Color(0.1, 0.12, 0.27), C_SIERRA = new THREE.Color(0.03, 0.02, 0.05);
+const C_ROSA = new THREE.Color(1, 0.55, 0.5), C_NUBE_NOCHE = new THREE.Color(0.03, 0.03, 0.06), C_LLUVIA = new THREE.Color(0.25, 0.2, 0.28), C_RAYO = new THREE.Color(1, 0.8, 0.6);
+const _s = new THREE.Vector3(), _q = new THREE.Vector3(), vAlto = new THREE.Vector3();
+function cuadro() {
+  const dtReal = Math.min(reloj.getDelta(), 0.5), dt = Math.min(dtReal, 0.05); tAcum += dtReal;
+  // Detener el sol: mientras ella lo sostiene, el mundo se queda quieto
+  if (detener.activo) {
+    if (detener.apretado) { detener.sostenido += dtReal; estado.tiempo = lerp(estado.tiempo, 0.03, Math.min(1, dtReal * 3)); anillo.style.setProperty('--p', Math.min(1, detener.sostenido / 6.4)); if (Sonido.nivelAhora < 3 && detener.sostenido > 0.4) Sonido.nivel(3); }
+    else { estado.tiempo = lerp(estado.tiempo, 1, Math.min(1, dtReal * 2)); estado.alt = Math.max(4.2, estado.alt - detener.ritmo * dtReal * estado.tiempo); }
+  } else estado.tiempo = lerp(estado.tiempo, 1, Math.min(1, dtReal * 2));
+  const dtM = dt * estado.tiempo; tMundo += dtM;
+  for (let i = TW.length - 1; i >= 0; i--) { const w = TW[i]; w.t += dtReal * 1000; const p = Math.min(1, w.t / w.ms); w.obj[w.k] = lerp(w.de, w.to, w.curva(p)); if (p >= 1) TW.splice(i, 1); }
+
+  // cámara: grúa desde los agaves + un respiro de mano
+  const k = cam.t;
+  camera.position.lerpVectors(CAM0, CAM, k); _q.lerpVectors(MIRA0, MIRA, Math.pow(k, 0.8));
+  camera.position.x += Math.sin(tAcum * 0.21) * 0.25 * k; camera.position.y += Math.sin(tAcum * 0.33) * 0.08;
+  camera.lookAt(_q.x + Math.sin(tAcum * 0.17) * 0.6, _q.y + Math.sin(tAcum * 0.27) * 0.25, _q.z);
+
+  // sol, cielo, luz y bruma
+  dirSol(estado.alt); u.sunPosition.value.copy(solDir);
+  const noche = suavecito(-1.5, -8, estado.alt), dorada = suavecito(14, 6, estado.alt) * (1 - suavecito(0, -4, estado.alt));
+  camera.getWorldDirection(vHoriz); vHoriz.y = 0; vHoriz.normalize(); vHoriz.y = 0.035; vHoriz.normalize();
+  colorCielo(vHoriz, solDir, cNiebla); cNiebla.lerp(C_NOCHE_NIEBLA, noche); scene.fog.color.copy(cNiebla);
+  colorSol(solDir, cLuz);
+  colorCielo(vAlto.copy(vHoriz).setY(0.36).normalize(), solDir, cTmp); const brillo = 0.2126 * cTmp.r + 0.7152 * cTmp.g + 0.0722 * cTmp.b; // como el fotómetro de una cámara
+  const expo = 0.62 * clamp(0.5 / Math.max(brillo, 0.01), 0.13, 1.15), comp = Math.pow(0.62 / expo, 0.7);
+  renderer.toneMappingExposure = lerp(renderer.toneMappingExposure, expo, Math.min(1, dtReal * 3));
+  matArriba.emissiveIntensity = matArribaSola.emissiveIntensity = 0.5 * comp; matCorteza.emissiveIntensity = 1.2 * comp; matPep.emissiveIntensity = 1.3 * comp;
+  luzSol.position.copy(solDir).multiplyScalar(100); luzSol.color.copy(cLuz); luzSol.intensity = 4.2 * suavecito(-2.5, 4, estado.alt) * comp;
+  colorCielo(vArriba, solDir, cTmp); luzCielo.color.copy(cTmp).multiplyScalar(2.2).lerp(C_NOCHE_CIELO, noche); luzCielo.intensity = 1.1 * comp;
+  luzCielo.groundColor.setRGB(0.12, 0.06, 0.04).multiplyScalar(1 - noche * 0.7); luzFrente.intensity = 0.35 * (1 - noche * 0.7) * comp;
+  for (const { m, bruma } of sierras) m.material.color.copy(cNiebla).multiplyScalar(lerp(0.32, 0.92, bruma)).lerp(C_SIERRA, (1 - bruma) * 0.4 * (1 - noche));
+  velo.material.uniforms.uN.value = noche; estrellas.uniforms.uO.value = suavecito(-3, -8, estado.alt); estrellas.uniforms.uT.value = tAcum;
+  const nu = nubes.material.uniforms; nu.uT.value = tMundo * 6;
+  colorSol(dirSol(estado.alt + 3.5), nu.uLuz.value).lerp(C_ROSA, 0.32).multiplyScalar(lerp(0.12, 1.25, suavecito(-6.5, 1, estado.alt)) * Math.max(1, brillo * 1.1)); dirSol(estado.alt);
+  colorCielo(vSombra.set(-solDir.x, 0.3, -solDir.z).normalize(), solDir, nu.uSombra.value); nu.uSombra.value.multiplyScalar(0.75).lerp(C_NUBE_NOCHE, noche);
+  nu.uOp.value = lerp(0.95, 0.35, noche); nu.uCob.value = 0.5 - estado.nubesLluvia * 0.06;
+  nubesLluvia.forEach((s, i) => {
+    s.material.opacity = estado.nubesLluvia * 0.9;
+    s.position.x = s.userData.x * (1.7 - 0.7 * estado.nubesLluvia) + Math.sin(tAcum * 0.3 + i) * 0.8;
+    s.material.color.copy(cNiebla).lerp(C_LLUVIA, 0.6);
+  });
+
+  // rayos de sol y destello (solo si el sol está enfrente y cerca de los cerros)
+  _s.copy(solDir).multiplyScalar(1000).add(camera.position).project(camera);
+  rayos.uniforms.uSol.value.set((_s.x + 1) / 2, (_s.y + 1) / 2); rayos.uniforms.uAsp.value = camera.aspect;
+  const enfrente = _s.z < 1 ? suavecito(1.6, 0.9, Math.max(Math.abs(_s.x), Math.abs(_s.y))) : 0;
+  rayos.uniforms.uFuerza.value = enfrente * suavecito(-2, 3, estado.alt) * lerp(0.6, 1.4, dorada);
+  rayos.uniforms.uFlare.value = enfrente * suavecito(4.2, 6.5, estado.alt);
+  rayos.uniforms.uColor.value.copy(cLuz).lerp(C_RAYO, 0.3);
+  const ex = renderer.toneMappingExposure; bloom.threshold = 0.95 / ex; rayos.uniforms.uUmbral.value = 1.25 / ex; // solo brilla lo que de verdad deslumbra
+  bloom.strength = lerp(0.5, 0.8, noche);
+
+  // pájaros
+  if (bandada.activo) {
+    bandada.t += dtM;
+    const bx = bandada.x0 + bandada.t * 22;
+    pajaros.forEach((b, i) => {
+      b.m.visible = true; b.f += dtM * 9 * b.s;
+      const a = Math.sin(b.f) * 0.9, w = 3.2 * b.s, pos = b.m.geometry.attributes.position.array;
+      const x = bx + b.ox, y = bandada.y + b.oy + Math.sin(bandada.t * 0.8 + i) * 0.8, z = bandada.z + b.oz;
+      pos.set([x, y, z, x - 1, y + 0.15, z, x - w * 0.6, y + Math.sin(a) * w * 0.7, z + w * 0.3, x, y, z, x - 1, y + 0.15, z, x - w * 0.6, y + Math.sin(a) * w * 0.7, z - w * 0.3]);
+      b.m.geometry.attributes.position.needsUpdate = true;
+    });
+    if (bandada.t > 30) { bandada.activo = false; pajaros.forEach((b) => (b.m.visible = false)); }
+  }
+
+  // polvito dorado en el aire y luciérnagas
+  polvo.m.uniforms.uO.value = dorada * 0.55 * enfrente; polvo.m.uniforms.uT.value = tAcum;
+  for (let i = 0; i < polvo.n; i++) {
+    const v = polvo.v[i], j = i * 3; polvo.pos[j] += v.x * dtM; polvo.pos[j + 1] += v.y * dtM; polvo.pos[j + 2] += v.z * dtM;
+    if (polvo.pos[j + 1] > 8 || polvo.pos[j + 1] < 0.3) v.y *= -1; if (Math.abs(polvo.pos[j]) > 10) v.x *= -1;
+  }
+  polvo.p.geometry.attributes.position.needsUpdate = true;
+  luciernagas.m.uniforms.uO.value = suavecito(-3, -7, estado.alt); luciernagas.m.uniforms.uT.value = tAcum;
+  for (let i = 0; i < luciernagas.n; i++) { const j = i * 3; luciernagas.pos[j] += Math.sin(tAcum * 0.7 + i) * 0.006; luciernagas.pos[j + 1] += Math.cos(tAcum * 0.9 + i * 1.7) * 0.004; }
+  luciernagas.p.geometry.attributes.position.needsUpdate = true;
+
+  // farolitos
+  if (farolesActivos && faroles.length < 90 && Math.random() < dtReal * 3.5) {
+    const z = rand(-150, -8), x = rand(-1, 1) * (8 + (12 - z) * 0.6);
+    soltarFarol(x, altura(x, z) + rand(0.5, 2), z, rand(1.4, 2.2));
+  }
+  for (let i = faroles.length - 1; i >= 0; i--) {
+    const f = faroles[i], d = f.userData; d.f += dt;
+    f.position.y += d.v * dt; f.position.x += Math.sin(d.f * 0.6) * 0.15 * dt; f.rotation.z = Math.sin(d.f * 0.8) * 0.08;
+    f.children[1].material.opacity = 0.75 + 0.25 * Math.sin(d.f * 7 + i);
+    if (f.position.y > 260) { scene.remove(f); faroles.splice(i, 1); }
+  }
+
+  // lluvia de pizza
+  if (lluviaRate > 0) { sigPizza -= dt; if (sigPizza <= 0 && pizzas.length < 9) { soltarPizza(); sigPizza = 1 / lluviaRate * rand(0.6, 1.3); } }
+  for (let i = pizzas.length - 1; i >= 0; i--) {
+    const p = pizzas[i], q = p.userData; p.position.y -= q.v * dt; q.fase += dt;
+    p.rotation.x = q.x0 + Math.sin(q.fase * 1.3) * 0.25; p.rotation.y += q.gy * dt; p.rotation.z = Math.sin(q.fase) * 0.2;
+    if (p.position.y < q.piso) { scene.remove(p); pizzas.splice(i, 1); }
+  }
+  for (let i = trozos.length - 1; i >= 0; i--) {
+    const w = trozos[i], q = w.userData; q.v.y -= 9 * dt; w.position.addScaledVector(q.v, dt);
+    w.rotation.x += q.giro.x * dt; w.rotation.y += q.giro.y * dt; q.vida -= dt; w.scale.setScalar(clamp(q.vida / 0.5, 0, 1));
+    if (q.vida <= 0) { scene.remove(w); w.geometry.dispose(); trozos.splice(i, 1); }
+  }
+  for (let j = 0; j < migas.n; j++) {
+    if (migas.vida[j] <= 0) { migas.pos[j * 3 + 1] = -999; continue; }
+    migas.vida[j] -= dt; migas.v[j * 3 + 1] -= 9 * dt;
+    migas.pos[j * 3] += migas.v[j * 3] * dt; migas.pos[j * 3 + 1] += migas.v[j * 3 + 1] * dt; migas.pos[j * 3 + 2] += migas.v[j * 3 + 2] * dt;
+  }
+  geoMigas.attributes.position.needsUpdate = true; geoMigas.attributes.color.needsUpdate = true;
+  if (gigante) { ubicarGigante(dtReal); if (gigante.saliendo) gigante.saliendo += dtReal; }
+
+  grano.uniforms.uT.value = tAcum;
+  composer.render();
+  if (capturar && estado.alt < 2.4) { // la foto de la postal, en el mejor color
+    capturar = false; postalFoto = document.createElement('canvas'); postalFoto.width = renderer.domElement.width; postalFoto.height = renderer.domElement.height;
+    postalFoto.getContext('2d').drawImage(renderer.domElement, 0, 0);
+  }
+  // si el cel va lento, baja un poco la resolución
+  fpsN++; fpsT += dtReal;
+  if (fpsT > 2.5) { const fps = fpsN / fpsT; fpsN = 0; fpsT = 0; if (fps < 32 && pr > 1) { pr = Math.max(1, pr - 0.25); renderer.setPixelRatio(pr); composer.setPixelRatio(pr); ajustarPuntos(); } }
+  requestAnimationFrame(cuadro);
+}
+
+function ajustarPuntos() { for (const m of [estrellas, polvo.m, luciernagas.m]) m.uniforms.uPR.value = pr; }
+function ajustar() {
+  camera.aspect = innerWidth / innerHeight; camera.fov = camera.aspect < 0.8 ? 60 : 50; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight); composer.setSize(innerWidth, innerHeight); ajustarPuntos();
+}
+addEventListener('resize', ajustar); ajustar();
+
+(async () => {
+  try { await Promise.race([document.fonts.load('800 100px "Bricolage Grotesque"'), new Promise((ok) => setTimeout(ok, 2500))]); } catch { /* letra del sistema */ }
+  requestAnimationFrame(cuadro);
+  $('go').disabled = false; $('go').textContent = 'Ver el atardecer 🌅';
+  window.__listo = true;
+})();
+
+window.__c = { get fase() { return fase; }, get atrapadas() { return atrapadas; }, get gigante() { return gigante; }, pizzas, faroles, aPantalla, estado, cam, historia, responder, hacerPostal,
+  get postalFoto() { return postalFoto; }, get orden() { return gigante?.orden; }, get detener() { return detener; } };
+</script>
+</body>
+</html>

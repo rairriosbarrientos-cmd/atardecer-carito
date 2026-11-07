@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#120a16">
+<title>Panel del atardecer 🌅</title>
+<link rel="icon" href="icon-192.png">
+<style>
+  :root { --fondo: #0c070f; --vidrio: rgba(30, 16, 32, .8); --borde: rgba(255, 196, 150, .24); --oro: #FFC27A; --rosa: #FF8A6A; --luz: #FFF4E8; --tenue: #B9A5B5; --ok: #7BE0A6; --mal: #FF7A7A; }
+  * { box-sizing: border-box; }
+  html { background: var(--fondo); }
+  body { margin: 0; min-height: 100vh; background: radial-gradient(130% 560px at 50% -60px, #5a2440 0%, #24122c 55%, var(--fondo) 100%) no-repeat var(--fondo); color: var(--luz);
+    font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; padding: max(20px, env(safe-area-inset-top)) 16px max(28px, env(safe-area-inset-bottom)); }
+  main, .pila { max-width: 520px; margin: 0 auto; display: grid; gap: 14px; }
+  h1 { font-size: 26px; margin: 4px 0 2px; } h1 span { color: var(--oro); }
+  .sub { color: var(--tenue); margin: 0 0 6px; }
+  .caja { background: var(--vidrio); border: 1px solid var(--borde); border-radius: 20px; padding: 18px; }
+  .caja h2 { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--rosa); margin: 0 0 10px; }
+  label { display: block; font-size: 13px; color: var(--tenue); margin: 6px 0 6px; }
+  input { width: 100%; font: inherit; font-size: 16px; color: var(--luz); background: rgba(255, 255, 255, .06); border: 1px solid var(--borde); border-radius: 14px; padding: 12px 14px; outline: none; }
+  input:focus { border-color: var(--oro); }
+  .fila { display: flex; gap: 10px; margin-top: 12px; }
+  button { font: inherit; font-weight: 650; min-height: 46px; padding: 11px 18px; border-radius: 999px; border: 1px solid var(--borde); background: rgba(255, 255, 255, .06); color: var(--luz); cursor: pointer; }
+  button.oro { background: linear-gradient(180deg, #FFE1A8, #FFB070 55%, #FF8A5C); color: #2A0F12; border-color: transparent; flex: 1; }
+  .estado { display: flex; align-items: center; gap: 10px; font-size: 16px; }
+  .punto { width: 12px; height: 12px; border-radius: 50%; flex: none; background: var(--tenue); }
+  .punto.ok { background: var(--ok); box-shadow: 0 0 12px var(--ok); } .punto.mal { background: var(--mal); }
+  .dato { color: var(--tenue); font-size: 13.5px; margin: 8px 0 0; }
+  ul { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 10px; }
+  li { border-top: 1px solid rgba(255, 255, 255, .08); padding-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  li small { display: block; color: var(--tenue); }
+  li button { min-height: 38px; padding: 7px 14px; font-size: 13.5px; color: var(--mal); border-color: rgba(255, 122, 122, .35); }
+  .msg { min-height: 22px; font-size: 14px; margin: 10px 0 0; color: var(--mal); }
+  .grande { font-size: 30px; font-weight: 800; color: var(--oro); margin: 0; }
+  [hidden] { display: none !important; }
+  .salir { background: none; border: none; color: var(--tenue); text-decoration: underline; min-height: 0; padding: 4px; justify-self: center; font-weight: 500; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Panel del atardecer <span>🌅</span></h1>
+    <p class="sub">Para ver si Carito activó el aviso de cada atardecer.</p>
+  </header>
+
+  <section class="caja" id="entrar">
+    <h2>Entrar</h2>
+    <label for="clave">Clave</label>
+    <input id="clave" type="password" autocomplete="current-password" placeholder="carito-…">
+    <div class="fila"><button class="oro" id="btnEntrar">Entrar</button></div>
+    <p class="msg" id="msgEntrar"></p>
+  </section>
+
+  <div id="panel" class="pila" hidden>
+    <section class="caja">
+      <h2>Hoy en Hostotipaquillo</h2>
+      <p class="grande" id="puesta">—</p>
+      <p class="dato">Hora en que se mete el sol. El aviso le llega unos minutos antes.</p>
+    </section>
+    <section class="caja">
+      <h2>Su teléfono</h2>
+      <div class="estado"><span class="punto" id="punto"></span><span id="estado">Revisando…</span></div>
+      <p class="dato" id="detalle"></p>
+      <ul id="equipos"></ul>
+    </section>
+    <section class="caja">
+      <h2>Último aviso</h2>
+      <p id="ultimo" style="margin:0">—</p>
+    </section>
+    <button class="salir" id="salir">Salir de este teléfono</button>
+  </div>
+</main>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const leerClave = () => { try { return localStorage.getItem('panel_clave') || ''; } catch { return ''; } };
+  const guardarClave = (v) => { try { v ? localStorage.setItem('panel_clave', v) : localStorage.removeItem('panel_clave'); } catch { /* sin almacenamiento */ } };
+  const fecha = (iso) => iso ? new Date(iso).toLocaleString('es-MX', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) : '';
+  const dia = (f) => { const [y, m, d] = f.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString('es-MX', { day: 'numeric', month: 'long' }); };
+  let clave = leerClave();
+
+  async function api(metodo, cuerpo) {
+    const r = await fetch('/api/panel', { method: metodo, headers: { 'x-clave': clave, ...(cuerpo ? { 'Content-Type': 'application/json' } : {}) }, body: cuerpo ? JSON.stringify(cuerpo) : undefined });
+    const datos = await r.json().catch(() => ({}));
+    if (!r.ok) { const e = new Error(datos.error || `Error ${r.status}`); e.status = r.status; throw e; }
+    return datos;
+  }
+
+  function pintar(d) {
+    const n = d.dispositivos.length;
+    $('puesta').textContent = d.puestaHoy;
+    $('punto').className = `punto ${n ? 'ok' : 'mal'}`;
+    $('estado').textContent = n ? 'Tiene el aviso activado ✓' : 'Todavía no activa el aviso';
+    $('detalle').textContent = n ? 'Si alguno es tu cel de prueba, quítalo para que no te lleguen a ti.' : 'Le aparece al final, después de contestar (en iPhone primero debe agregarla a inicio).';
+    $('equipos').replaceChildren(...d.dispositivos.map((x) => {
+      const li = document.createElement('li'), t = document.createElement('span'), s = document.createElement('small'), q = document.createElement('button');
+      t.textContent = `📱 ${x.equipo} · desde ${fecha(x.alta)}`;
+      s.textContent = x.deHoy ? `Hoy le toca el ${x.deHoy.n} de ${d.total}: “${x.deHoy.body}”` : x.inicio > d.hoy ? 'Su primer atardecer le llega mañana 🌅' : 'Ya terminó la serie de atardeceres.';
+      t.append(s); q.textContent = 'Quitar';
+      q.addEventListener('click', async () => {
+        if (!confirm(`¿Quitar el ${x.equipo} dado de alta el ${fecha(x.alta)}? Ya no le llegarán avisos a ese teléfono.`)) return;
+        q.disabled = true; try { await api('POST', { accion: 'quitar', id: x.id }); await cargar(); } catch (e) { alert(e.message); q.disabled = false; }
+      });
+      li.append(t, q); return li;
+    }));
+    $('ultimo').textContent = d.ultimo ? `${dia(d.ultimo.fecha)} a las ${d.ultimo.hora} · llegó a ${d.ultimo.enviados} de ${d.ultimo.total}` : 'Todavía no sale ninguno.';
+  }
+
+  async function cargar() {
+    try { pintar(await api('GET')); $('entrar').hidden = true; $('panel').hidden = false; }
+    catch (e) {
+      $('entrar').hidden = false; $('panel').hidden = true;
+      if (e.status === 401) { const escribio = !!$('clave').value; guardarClave(''); clave = ''; $('msgEntrar').textContent = escribio ? 'Esa clave no es 🙈' : ''; }
+      else $('msgEntrar').textContent = e.message;
+    }
+  }
+  $('btnEntrar').addEventListener('click', async () => {
+    clave = $('clave').value.trim(); if (!clave) return;
+    $('btnEntrar').disabled = true; await cargar(); $('btnEntrar').disabled = false;
+    if (!$('panel').hidden) guardarClave(clave);
+  });
+  $('clave').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('btnEntrar').click(); });
+  $('salir').addEventListener('click', () => { guardarClave(''); clave = ''; $('clave').value = ''; $('panel').hidden = true; $('entrar').hidden = false; });
+  if (clave) cargar();
+</script>
+</body>
+</html>
